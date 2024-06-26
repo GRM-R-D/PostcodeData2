@@ -10,7 +10,7 @@ st.write(
 )
 
 # Load the CSV file from the data subfolder
-filename = 'postcodes.csv'  # replace with your actual CSV file path
+filename = 'Postcodes.csv'  # replace with your actual CSV file path
 df = pd.read_csv(filename)
 
 # Drop the 'fid' column if it exists
