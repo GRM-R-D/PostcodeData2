@@ -1,89 +1,86 @@
+from __future__ import annotations
+
+import folium
+import folium.features
+import geopandas as gpd
+import shapely
 import streamlit as st
-import pandas as pd
 
-st.set_page_config(page_title="Postcodes Map", page_icon="🌍")
+from streamlit_folium import st_folium
 
-st.markdown("# Postcodes Map")
-st.sidebar.header("Postcodes Map")
-st.write(
-    """This demo shows how to use
-[`st.pydeck_chart`](https://docs.streamlit.io/develop/api-reference/charts/st.pydeck_chart)
-to display Postcode Data and its relationship with Atterberg limits."""
+st.set_page_config(layout="wide")
+
+st.write("## Dynamic layer control updates")
+
+START_LOCATION = [37.7944347109497, -122.398077892527]
+START_ZOOM = 17
+
+if "feature_group" not in st.session_state:
+    st.session_state["feature_group"] = None
+
+wkt1 = (
+    "POLYGON ((-122.399077892527 37.7934347109497, -122.398922660838 "
+    "37.7934544916178, -122.398980265018 37.7937266504805, -122.399133972495 "
+    "37.7937070646238, -122.399077892527 37.7934347109497))"
+)
+wkt2 = (
+    "POLYGON ((-122.397416 37.795017, -122.397137 37.794712, -122.396332 37.794983,"
+    " -122.396171 37.795483, -122.396858 37.795695, -122.397652 37.795466, "
+    "-122.397759 37.79511, -122.397416 37.795017))"
 )
 
+polygon_1 = shapely.wkt.loads(wkt1)
+polygon_2 = shapely.wkt.loads(wkt2)
 
-@st.cache_data
-def from_local_file(filename):
-    return pd.read_json(filename)
+gdf1 = gpd.GeoDataFrame(geometry=[polygon_1]).set_crs(epsg=4326)
+gdf2 = gpd.GeoDataFrame(geometry=[polygon_2]).set_crs(epsg=4326)
 
-try:
-    ALL_LAYERS = {
-        "Postcodes": pdk.Layer(
-            "HexagonLayer",
-            data=from_data_file("postcodes.json"),
-            get_position=["lon", "lat"],
-            radius=200,
-            elevation_scale=4,
-            elevation_range=[0, 1000],
-            extruded=True,
-        ),
-        "Bart Stop Exits": pdk.Layer(
-            "ScatterplotLayer",
-            data=from_data_file("bart_stop_stats.json"),
-            get_position=["lon", "lat"],
-            get_color=[200, 30, 0, 160],
-            get_radius="[exits]",
-            radius_scale=0.05,
-        ),
-        "Bart Stop Names": pdk.Layer(
-            "TextLayer",
-            data=from_data_file("bart_stop_stats.json"),
-            get_position=["lon", "lat"],
-            get_text="name",
-            get_color=[0, 0, 0, 200],
-            get_size=15,
-            get_alignment_baseline="'bottom'",
-        ),
-        "Outbound Flow": pdk.Layer(
-            "ArcLayer",
-            data=from_data_file("bart_path_stats.json"),
-            get_source_position=["lon", "lat"],
-            get_target_position=["lon2", "lat2"],
-            get_source_color=[200, 30, 0, 160],
-            get_target_color=[200, 30, 0, 160],
-            auto_highlight=True,
-            width_scale=0.0001,
-            get_width="outbound",
-            width_min_pixels=3,
-            width_max_pixels=30,
-        ),
-    }
-    st.sidebar.markdown("### Map Layers")
-    selected_layers = [
-        layer
-        for layer_name, layer in ALL_LAYERS.items()
-        if st.sidebar.checkbox(layer_name, True)
-    ]
-    if selected_layers:
-        st.pydeck_chart(
-            pdk.Deck(
-                map_style="mapbox://styles/mapbox/light-v9",
-                initial_view_state={
-                    "latitude": 37.76,
-                    "longitude": -122.4,
-                    "zoom": 11,
-                    "pitch": 50,
-                },
-                layers=selected_layers,
-            )
-        )
-    else:
-        st.error("Please choose at least one layer above.")
-except URLError as e:
-    st.error(
-        """
-        **This demo requires internet access.**
-        Connection error: %s
-    """
-        % e.reason
-    )
+style_parcels = {
+    "fillColor": "#1100f8",
+    "color": "#1100f8",
+    "fillOpacity": 0.13,
+    "weight": 2,
+}
+style_buildings = {
+    "color": "#ff3939",
+    "fillOpacity": 0,
+    "weight": 3,
+    "opacity": 1,
+    "dashArray": "5, 5",
+}
+
+polygon_folium1 = folium.GeoJson(data=gdf1, style_function=lambda x: style_parcels)
+polygon_folium2 = folium.GeoJson(data=gdf2, style_function=lambda x: style_buildings)
+
+map = folium.Map(
+    location=START_LOCATION,
+    zoom_start=START_ZOOM,
+    tiles="OpenStreetMap",
+    max_zoom=21,
+)
+
+fg1 = folium.FeatureGroup(name="Parcels")
+fg1.add_child(polygon_folium1)
+
+fg2 = folium.FeatureGroup(name="Buildings")
+fg2.add_child(polygon_folium2)
+
+fg_dict = {"Parcels": fg1, "Buildings": fg2, "None": None, "Both": [fg1, fg2]}
+
+control = folium.LayerControl(collapsed=False)
+
+fg = st.radio("Feature Group", ["Parcels", "Buildings", "None", "Both"])
+
+layer = st.radio("Layer Control", ["yes", "no"])
+
+layer_dict = {"yes": control, "no": None}
+
+st_folium(
+    map,
+    width=800,
+    height=450,
+    returned_objects=[],
+    feature_group_to_add=fg_dict[fg],
+    debug=True,
+    layer_control=layer_dict[layer],
+)
