@@ -3,12 +3,10 @@ import pandas as pd
 import folium
 from folium.plugins import MarkerCluster, Geocoder
 from streamlit_folium import folium_static
-from branca.element import Template, MacroElement
-
+import streamlit.components.v1 as components
 
 # Set up the page configuration
 st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
-
 
 @st.cache_resource
 def add_logo(logo_url: str, width: int = 250, height: int = 300):
@@ -25,7 +23,6 @@ def add_logo(logo_url: str, width: int = 250, height: int = 300):
         </style>
     """
     st.markdown(logo_css, unsafe_allow_html=True)
-
 
 # URL of the logo image
 logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-master-logo-02.png"
@@ -44,7 +41,6 @@ df = pd.read_csv(filename)
 # Determine the range for Plasticity Index slider
 plasticity_rng = (df['PlasticityIndex'].min(), df['PlasticityIndex'].max())
 
-
 def get_color(plasticity_index):
     if plasticity_index >= 40:
         return 'red'
@@ -54,7 +50,6 @@ def get_color(plasticity_index):
         return 'yellow'
     else:
         return 'green'
-
 
 def create_map(filter_df):
     m = folium.Map(location=[filter_df['Latitude'].mean(), filter_df['Longitude'].mean()], zoom_start=6)
@@ -78,41 +73,11 @@ def create_map(filter_df):
 
     # Add Geocoder plugin
     Geocoder().add_to(m)
-
-    # Add Legend
-    legend_template = """
-    {% macro html(this, kwargs) %}
-    <div id='maplegend' class='maplegend' 
-        style='position: absolute; z-index: 9999; background-color: rgba(255, 255, 255, 0.5);
-         border-radius: 6px; padding: 10px; font-size: 10.5px; right: 20px; top: 20px;'>     
-    <div class='legend-scale'>
-      <ul class='legend-labels'>
-        <li><span style='background: green; opacity: 0.75;'></span>Plasticity Index < 10</li>
-        <li><span style='background: yellow; opacity: 0.75;'></span>10 <= Plasticity Index < 20</li>
-        <li><span style='background: orange; opacity: 0.75;'></span>20 <= Plasticity Index < 40</li>
-        <li><span style='background: red; opacity: 0.75;'></span>Plasticity Index >= 40</li>
-      </ul>
-    </div>
-    </div> 
-    <style type='text/css'>
-      .maplegend .legend-scale ul {margin: 0; padding: 0; color: #0f0f0f;}
-      .maplegend .legend-scale ul li {list-style: none; line-height: 18px; margin-bottom: 1.5px;}
-      .maplegend ul.legend-labels li span {float: left; height: 16px; width: 16px; margin-right: 4.5px;}
-    </style>
-    {% endmacro %}
-    """
-
-    macro = MacroElement()
-    macro._template = Template(legend_template)
-    m.get_root().add_child(macro)
-
     return m
-
 
 def show_map(filter_df):
     m = create_map(filter_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
-
 
 # Create a two-column layout
 col1, col2 = st.columns([2, 2])
@@ -161,6 +126,21 @@ with col1:
 
     # Show the map with the filtered data
     show_map(filtered_df)
+
+    # Add a legend for the map
+    legend_html = """
+    <div style="position: fixed; 
+                bottom: 10px; left: 10px; width: 160px; height: 120px; 
+                background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
+                padding: 10px;">
+    <b>Plasticity Index</b><br>
+    <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
+    <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
+    <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 20 - 40<br>
+    <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ≥ 40<br>
+    </div>
+    """
+    components.html(legend_html, height=200)
 
 with col2:
     st.header("Data")
