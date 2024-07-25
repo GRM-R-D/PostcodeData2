@@ -180,6 +180,19 @@ columns_to_display = [col for col in columns_to_display if col in df.columns]
 # Filter DataFrame for display
 filtered_df_display = filtered_df[columns_to_display]
 
+column_rename_map = {
+    'MoistureContent': 'MC',
+    'PlasticityIndex': 'PI',
+    'PlasticLimit': 'PL',
+    'LiquidLimit': 'LL',
+    'Easting': 'E',
+    'Northing': 'N',
+    'Latitude': 'Lat',
+    'Longitude': 'Lon'
+}
+
+filtered_df_display = filtered_df_display.rename(columns=column_rename_map)
+
 # Row 3: Map and DataFrame
 with row3[0]:
     st.header("Map")
