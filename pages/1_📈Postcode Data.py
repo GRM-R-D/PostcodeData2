@@ -52,6 +52,10 @@ def get_color(plasticity_index):
         return 'green'
 
 def create_map(filter_df):
+    # Check if the filtered DataFrame is empty
+    if filter_df.empty:
+        return folium.Map(location=[0, 0], zoom_start=6)  # Default location if no data
+
     m = folium.Map(location=[filter_df['Latitude'].mean(), filter_df['Longitude'].mean()], zoom_start=6)
     marker_cluster = MarkerCluster().add_to(m)
 
