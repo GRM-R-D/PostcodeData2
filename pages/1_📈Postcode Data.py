@@ -89,45 +89,53 @@ def show_map(filtered_df):
     folium_static(m)  # Display the map
 
 
-# Define the layout using Streamlit's grid system
-row1 = st.columns([2, 1, 1])
-row2 = st.columns([1, 1])
-row3 = st.columns([2, 2])
-
 # Initialize session state variables if not already present
 if 'selected_project_id' not in st.session_state:
     st.session_state.selected_project_id = ""
 if 'selected_geology_code' not in st.session_state:
     st.session_state.selected_geology_code = ""
+if 'filters_visible' not in st.session_state:
+    st.session_state.filters_visible = True
 
-# Row 1: Filters and Searches
-with row1[0]:
-    plasticity_min, plasticity_max = plasticity_rng
-    plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
-                                  value=(int(plasticity_min), int(plasticity_max)))
+# Toggle button for filters
+if st.button('Toggle Filters'):
+    st.session_state.filters_visible = not st.session_state.filters_visible
 
-with row1[1]:
-    project_ids = sorted(df['ProjectID'].astype(str).unique())
-    selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids, key="project_id")
+# Define the layout using Streamlit's grid system
+row1 = st.columns([2, 1, 1])
+row2 = st.columns([1, 1])
+row3 = st.columns([2, 2])
 
-    # Update session state for Project ID
-    if selected_project_id != st.session_state.selected_project_id:
-        st.session_state.selected_project_id = selected_project_id
-        st.session_state.selected_geology_code = ""  # Reset Geology Code when Project ID changes
+# Conditional display of filters
+if st.session_state.filters_visible:
+    # Row 1: Filters and Searches
+    with row1[0]:
+        plasticity_min, plasticity_max = plasticity_rng
+        plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
+                                      value=(int(plasticity_min), int(plasticity_max)))
 
-with row1[2]:
-    # Update Geology Code options based on selected Project ID
-    if st.session_state.selected_project_id:
-        geology_codes = sorted(
-            df[df['ProjectID'].astype(str) == st.session_state.selected_project_id]['GeologyCode'].astype(str).unique())
-    else:
-        geology_codes = sorted(df['GeologyCode'].astype(str).unique())
+    with row1[1]:
+        project_ids = sorted(df['ProjectID'].astype(str).unique())
+        selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids, key="project_id")
 
-    selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes, key="geology_code")
+        # Update session state for Project ID
+        if selected_project_id != st.session_state.selected_project_id:
+            st.session_state.selected_project_id = selected_project_id
+            st.session_state.selected_geology_code = ""  # Reset Geology Code when Project ID changes
 
-    # Update session state for Geology Code
-    if selected_geology_code != st.session_state.selected_geology_code:
-        st.session_state.selected_geology_code = selected_geology_code
+    with row1[2]:
+        # Update Geology Code options based on selected Project ID
+        if st.session_state.selected_project_id:
+            geology_codes = sorted(
+                df[df['ProjectID'].astype(str) == st.session_state.selected_project_id]['GeologyCode'].astype(str).unique())
+        else:
+            geology_codes = sorted(df['GeologyCode'].astype(str).unique())
+
+        selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes, key="geology_code")
+
+        # Update session state for Geology Code
+        if selected_geology_code != st.session_state.selected_geology_code:
+            st.session_state.selected_geology_code = selected_geology_code
 
 # Apply filters based on selections
 filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
