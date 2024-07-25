@@ -99,6 +99,19 @@ with col1:
     filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
                      (df['PlasticityIndex'] <= plasticity_filter[1])]
 
+    # Dropdown for Project ID and Geology Code
+    project_ids = df['ProjectID'].astype(str).unique()
+    geology_codes = df['GeologyCode'].astype(str).unique()
+
+    selected_project_id = st.selectbox("Select Project ID", options=[""] + sorted(project_ids))
+    selected_geology_code = st.selectbox("Select Geology Code", options=[""] + sorted(geology_codes))
+
+    # Filter DataFrame based on selection
+    if selected_project_id:
+        filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
+    if selected_geology_code:
+        filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
+
     # Show the map with the filtered data
     show_map(filtered_df)
 
@@ -129,19 +142,6 @@ with col2:
 
     # Ensure only existing columns are included
     columns_to_display = [col for col in columns_to_display if col in df.columns]
-
-    # Dropdown for Project ID and Geology Code
-    project_ids = df['ProjectID'].astype(str).unique()
-    geology_codes = df['GeologyCode'].astype(str).unique()
-
-    selected_project_id = st.selectbox("Select Project ID", options=[""] + sorted(project_ids))
-    selected_geology_code = st.selectbox("Select Geology Code", options=[""] + sorted(geology_codes))
-
-    # Filter DataFrame based on selection
-    if selected_project_id:
-        filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
-    if selected_geology_code:
-        filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
 
     # Filter DataFrame for display
     filtered_df_display = filtered_df[columns_to_display]
