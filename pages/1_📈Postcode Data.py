@@ -82,13 +82,8 @@ def show_map(filter_df):
 # Create a two-column layout
 col1, col2 = st.columns([2, 2])
 
-with col1:
-    st.header("Map")
-    # Show the map with the filtered data
-    show_map(df)
-
 with col2:
-    st.header("Data")
+    st.header("Filters and Data")
 
     # Add Plasticity Index slider
     plasticity_min, plasticity_max = plasticity_rng
@@ -172,3 +167,8 @@ with col2:
     # Filter DataFrame for display
     filtered_df_display = filtered_df[columns_to_display]
     st.dataframe(filtered_df_display, hide_index=True)
+
+with col1:
+    st.header("Map")
+    # Show the map with the filtered data from col2
+    show_map(filtered_df)
