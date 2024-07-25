@@ -173,7 +173,7 @@ with row2[0]:
         <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> ≥ 40
         </div>
         """
-    components.html(legend_html, height=60)
+    components.html(legend_html, height=80)
 
 with row2[1]:
     show_utm = st.checkbox('Show UTM Coordinates', value=True)
