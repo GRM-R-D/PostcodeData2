@@ -7,6 +7,7 @@ from streamlit_folium import folium_static
 # Set up the page configuration
 st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
 
+
 @st.cache_resource
 def add_logo(logo_url: str, width: int = 250, height: int = 300):
     """Add a logo (from logo_url) on the top of the navigation page of a multipage app."""
@@ -22,6 +23,7 @@ def add_logo(logo_url: str, width: int = 250, height: int = 300):
         </style>
     """
     st.markdown(logo_css, unsafe_allow_html=True)
+
 
 # Set the title and sidebar header
 st.markdown("# Postcode Data")
