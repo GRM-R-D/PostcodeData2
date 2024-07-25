@@ -24,6 +24,7 @@ def add_logo(logo_url: str, width: int = 250, height: int = 300):
     """
     st.markdown(logo_css, unsafe_allow_html=True)
 
+
 # URL of the logo image
 logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-master-logo-02.png"
 
@@ -32,7 +33,6 @@ add_logo(logo_url, height=100)
 
 # Set the title and sidebar header
 st.markdown("# Postcode Data")
-st.sidebar.header("Postcode Data")
 st.write("This page shows a table of UK postcodes and their corresponding Atterberg Limits")
 
 # Read and preprocess the CSV data
