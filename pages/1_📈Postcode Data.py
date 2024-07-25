@@ -3,7 +3,7 @@ import pandas as pd
 import folium
 from folium.plugins import MarkerCluster, Geocoder
 from streamlit_folium import folium_static
-import branca
+from branca.element import Template, MacroElement
 
 # Set up the page configuration
 st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
@@ -79,33 +79,82 @@ def create_map(filter_df):
     Geocoder().add_to(m)
 
     # Add a custom legend to the map
-    legend_html = """
-    <div style="
-        position: fixed;
-        bottom: 50px;
-        left: 50px;
-        width: 250px;
-        height: 120px;
-        background-color: white;
-        border-radius: 5px;
-        box-shadow: 0 0 5px rgba(0,0,0,0.3);
-        padding: 10px;
-        font-size: 14px;
-        z-index: 9999;
-        ">
-        <div><strong>Plasticity Index</strong></div>
-        <div><span style="background-color: green; color: green; font-size: 20px;">◼</span> Plasticity Index < 10</div>
-        <div><span style="background-color: yellow; color: yellow; font-size: 20px;">◼</span> 10 ≤ Plasticity Index < 20</div>
-        <div><span style="background-color: orange; color: orange; font-size: 20px;">◼</span> 20 ≤ Plasticity Index < 40</div>
-        <div><span style="background-color: red; color: red; font-size: 20px;">◼</span> Plasticity Index ≥ 40</div>
-    </div>
-    """
-
-    legend = branca.element.MacroElement()
-    legend._template = branca.element.Template(legend_html)
-    m.get_root().add_child(legend)
+    template = """
+        {% macro html(this, kwargs) %}
+        <html>
+        <head>
+          <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+          <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+          <style>
+            .maplegend {
+              position: absolute;
+              z-index: 9999;
+              border: 2px solid grey;
+              background-color: rgba(255, 255, 255, 0.8);
+              border-radius: 6px;
+              padding: 10px;
+              font-size: 14px;
+            }
+            .maplegend .legend-title {
+              text-align: left;
+              margin-bottom: 5px;
+              font-weight: bold;
+            }
+            .maplegend .legend-scale ul {
+              margin: 0;
+              padding: 0;
+              list-style: none;
+            }
+            .maplegend .legend-scale ul li {
+              font-size: 80%;
+              margin-bottom: 2px;
+            }
+            .maplegend ul.legend-labels li span {
+              display: block;
+              float: left;
+              height: 16px;
+              width: 30px;
+              margin-right: 5px;
+              border: 1px solid #999;
+            }
+          </style>
+          <script>
+            $( function() {
+              $( "#maplegend" ).draggable();
+            });
+          </script>
+        </head>
+        <body>
+          <div id='maplegend' class='maplegend' 
+              style='right: 20px; bottom: 20px;'>
+            <div class='legend-title'>Plasticity Index</div>
+            <div class='legend-scale'>
+              <ul class='legend-labels'>
+                <li><span style='background: green;'></span>Plasticity Index < 10</li>
+                <li><span style='background: yellow;'></span>10 ≤ Plasticity Index < 20</li>
+                <li><span style='background: orange;'></span>20 ≤ Plasticity Index < 40</li>
+                <li><span style='background: red;'></span>Plasticity Index ≥ 40</li>
+              </ul>
+            </div>
+          </div>
+        </body>
+        </html>
+        {% endmacro %}
+        """
+    macro = MacroElement()
+    macro._template = Template(template)
+    m.get_root().add_child(macro)
 
     return m
+
+
+def show_map(filter_df):
+    m = create_map(filter_df)  # Create the map with the filtered data
+    folium_static(m)  # Display the map with the legend
+
+
+# Call the show_map function with your filtered DataFrame
+# show_map(filtered_df)
 
 
 def show_map(filter_df):
