@@ -99,35 +99,39 @@ with col1:
     filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
                      (df['PlasticityIndex'] <= plasticity_filter[1])]
 
-    # Store filtered options in session state
-    if 'filtered_options' not in st.session_state:
-        st.session_state.filtered_options = {
-            'project_ids': sorted(df['ProjectID'].astype(str).unique()),
-            'geology_codes': sorted(df['GeologyCode'].astype(str).unique())
-        }
+    # Initialize session state
+    if 'project_options' not in st.session_state:
+        st.session_state.project_options = sorted(df['ProjectID'].astype(str).unique())
+    if 'geology_options' not in st.session_state:
+        st.session_state.geology_options = sorted(df['GeologyCode'].astype(str).unique())
 
     # Dropdown for Project ID
-    project_ids = sorted(filtered_df['ProjectID'].astype(str).unique())
-    selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids)
-
-    # Update geology codes based on selected Project ID
-    if selected_project_id:
-        filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
-
-    # Update session state with filtered geology codes
-    if selected_project_id:
-        geology_codes = sorted(filtered_df['GeologyCode'].astype(str).unique())
-        st.session_state.filtered_options['geology_codes'] = geology_codes
-    else:
-        st.session_state.filtered_options['geology_codes'] = sorted(df['GeologyCode'].astype(str).unique())
+    filtered_project_ids = sorted(filtered_df['ProjectID'].astype(str).unique())
+    selected_project_id = st.selectbox("Select Project ID", options=[""] + filtered_project_ids)
 
     # Dropdown for Geology Code
-    geology_codes = st.session_state.filtered_options['geology_codes']
-    selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes)
+    if selected_project_id:
+        filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
+    filtered_geology_codes = sorted(filtered_df['GeologyCode'].astype(str).unique())
+    selected_geology_code = st.selectbox("Select Geology Code", options=[""] + filtered_geology_codes)
 
     # Apply Geology Code filter
     if selected_geology_code:
         filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
+
+    # Update project options based on selected geology code
+    if selected_geology_code:
+        filtered_projects_for_geology = sorted(filtered_df['ProjectID'].astype(str).unique())
+        st.session_state.project_options = filtered_projects_for_geology
+    else:
+        st.session_state.project_options = sorted(df['ProjectID'].astype(str).unique())
+
+    # Update geology options based on selected project ID
+    if selected_project_id:
+        filtered_geologies_for_project = sorted(filtered_df['GeologyCode'].astype(str).unique())
+        st.session_state.geology_options = filtered_geologies_for_project
+    else:
+        st.session_state.geology_options = sorted(df['GeologyCode'].astype(str).unique())
 
     # Show the map with the filtered data
     show_map(filtered_df)
