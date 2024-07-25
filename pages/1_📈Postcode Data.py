@@ -156,7 +156,7 @@ if st.session_state.selected_geology_code:
 with row2[0]:
     legend_html = """<div style="position: fixed; bottom: 10px; left: 10px; width: auto; height: 40px; 
     background-color: black; border:2px solid grey; border-radius:3px; z-index:9999; font-size:14px; padding: 10px 
-    10px 30px 10px;; white-space: nowrap; font-family: 'Arial', sans-serif; color: #FAFAFA;"> <b style="font-family: 
+    10px 25px 10px;; white-space: nowrap; font-family: 'Arial', sans-serif; color: #FAFAFA;"> <b style="font-family: 
     'Arial', sans-serif; display: block; margin-bottom: 10px;">Plasticity Index</b> <i style="background:green; 
     width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10 <i style="background:yellow; 
     width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> 10 - 20 <i 
