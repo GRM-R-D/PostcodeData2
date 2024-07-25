@@ -162,7 +162,7 @@ with row2[0]:
     height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> 10 - 20 <i 
     style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 
     10px;"></i> 20 - 40 <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 
-    5px; margin-left: 10px;margin-bottom: 5px;"></i> ≥ 40 </div>"""
+    5px; margin-left: 10px; margin-bottom: 5px;"></i> ≥ 40 </div>"""
     components.html(legend_html, height=100)
 
 with row2[1]:
