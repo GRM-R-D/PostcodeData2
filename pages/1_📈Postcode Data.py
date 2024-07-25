@@ -79,22 +79,22 @@ def show_map(filtered_df):
     m = create_map(filtered_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
 
-# Create a three-column layout for filters
-col1, col2, col3 = st.columns([1, 2, 1])
+# Define the layout using Streamlit's grid system
+row1 = st.columns([2, 1, 1])
+row2 = st.columns([1, 1])
+row3 = st.columns([2, 2])
 
-with col1:
-    # Add Plasticity Index slider
+# Row 1: Filters and Searches
+with row1[0]:
     plasticity_min, plasticity_max = plasticity_rng
     plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
                                   value=(int(plasticity_min), int(plasticity_max)))
 
-with col2:
-    # Add Project ID dropdown
+with row1[1]:
     project_ids = sorted(df['ProjectID'].astype(str).unique())
     selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids)
 
-with col3:
-    # Add Geology Code dropdown
+with row1[2]:
     geology_codes = sorted(df['GeologyCode'].astype(str).unique())
     selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes)
 
@@ -108,24 +108,25 @@ if selected_project_id:
 if selected_geology_code:
     filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
 
-# Add a legend for the map
-legend_html = """
-    <div style="position: fixed; 
-                bottom: 10px; left: 10px; width: 160px; height: 120px; 
-                background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
-                padding: 10px;">
-    <b>Plasticity Index</b><br>
-    <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
-    <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
-    <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 20 - 40<br>
-    <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ≥ 40<br>
-    </div>
-    """
-components.html(legend_html, height=200)
+# Row 2: Legend and Checkboxes
+with row2[0]:
+    legend_html = """
+        <div style="position: fixed; 
+                    bottom: 10px; left: 10px; width: 160px; height: 120px; 
+                    background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
+                    padding: 10px;">
+        <b>Plasticity Index</b><br>
+        <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
+        <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
+        <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 20 - 40<br>
+        <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ≥ 40<br>
+        </div>
+        """
+    components.html(legend_html, height=200)
 
-# Group checkboxes
-show_utm = st.checkbox('Show UTM Coordinates', value=True)
-show_latlong = st.checkbox('Show LATLONG Coordinates', value=True)
+with row2[1]:
+    show_utm = st.checkbox('Show UTM Coordinates', value=True)
+    show_latlong = st.checkbox('Show LATLONG Coordinates', value=True)
 
 # Define column groups
 utm_columns = ['Easting', 'Northing']
@@ -151,14 +152,12 @@ columns_to_display = [col for col in columns_to_display if col in df.columns]
 # Filter DataFrame for display
 filtered_df_display = filtered_df[columns_to_display]
 
-# Create a two-column layout for map and table
-col1, col2 = st.columns([2, 2])
-
-with col1:
+# Row 3: Map and DataFrame
+with row3[0]:
     st.header("Map")
-    # Show the map with the filtered data from col2
+    # Show the map with the filtered data
     show_map(filtered_df)
 
-with col2:
+with row3[1]:
     st.header("Table")
     st.dataframe(filtered_df_display, hide_index=True)
