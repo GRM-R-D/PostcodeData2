@@ -80,30 +80,27 @@ def create_map(filter_df):
 
     # Add a custom legend to the map
     legend_html = """
-    {% macro html(this, kwargs) %}
     <div style="
         position: fixed;
         bottom: 50px;
         left: 50px;
         width: 250px;
         height: 120px;
-        z-index:9999;
-        font-size:14px;
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        padding: 10px;
+        font-size: 14px;
+        z-index: 9999;
         ">
-        <div style="
-            background-color: #ffffff;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.3);
-            ">
-            <p><span style="background-color:green; color: green; font-size:150%; padding: 5px;">◼</span> Plasticity Index < 10</p>
-            <p><span style="background-color:yellow; color: yellow; font-size:150%; padding: 5px;">◼</span> 10 ≤ Plasticity Index < 20</p>
-            <p><span style="background-color:orange; color: orange; font-size:150%; padding: 5px;">◼</span> 20 ≤ Plasticity Index < 40</p>
-            <p><span style="background-color:red; color: red; font-size:150%; padding: 5px;">◼</span> Plasticity Index ≥ 40</p>
-        </div>
+        <div><strong>Plasticity Index</strong></div>
+        <div><span style="background-color: green; color: green; font-size: 20px;">◼</span> Plasticity Index < 10</div>
+        <div><span style="background-color: yellow; color: yellow; font-size: 20px;">◼</span> 10 ≤ Plasticity Index < 20</div>
+        <div><span style="background-color: orange; color: orange; font-size: 20px;">◼</span> 20 ≤ Plasticity Index < 40</div>
+        <div><span style="background-color: red; color: red; font-size: 20px;">◼</span> Plasticity Index ≥ 40</div>
     </div>
-    {% endmacro %}
     """
+
     legend = branca.element.MacroElement()
     legend._template = branca.element.Template(legend_html)
     m.get_root().add_child(legend)
