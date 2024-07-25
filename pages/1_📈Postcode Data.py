@@ -7,6 +7,7 @@ from streamlit_folium import folium_static
 # Set up the page configuration
 st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
 
+
 @st.cache_resource
 def add_logo(logo_url: str, width: int = 250, height: int = 300):
     """Add a logo (from logo_url) on the top of the navigation page of a multipage app."""
@@ -22,6 +23,7 @@ def add_logo(logo_url: str, width: int = 250, height: int = 300):
         </style>
     """
     st.markdown(logo_css, unsafe_allow_html=True)
+
 
 # URL of the logo image
 logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-master-logo-02.png"
@@ -40,6 +42,7 @@ df = pd.read_csv(filename)
 # Determine the range for Plasticity Index slider
 plasticity_rng = (df['PlasticityIndex'].min(), df['PlasticityIndex'].max())
 
+
 def get_color(plasticity_index):
     if plasticity_index >= 40:
         return 'red'
@@ -49,6 +52,7 @@ def get_color(plasticity_index):
         return 'yellow'
     else:
         return 'green'
+
 
 def create_map(filter_df):
     m = folium.Map(location=[filter_df['Latitude'].mean(), filter_df['Longitude'].mean()], zoom_start=6)
@@ -74,9 +78,11 @@ def create_map(filter_df):
     Geocoder().add_to(m)
     return m
 
+
 def show_map(filter_df):
     m = create_map(filter_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
+
 
 # Create a two-column layout
 col1, col2 = st.columns([2, 2])
@@ -93,21 +99,42 @@ with col1:
     filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
                      (df['PlasticityIndex'] <= plasticity_filter[1])]
 
-    # Dropdown for Project ID
-    project_ids = sorted(filtered_df['ProjectID'].astype(str).unique())
-    selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids)
+    # Store filtered options in session state
+    if 'filtered_options' not in st.session_state:
+        st.session_state.filtered_options = {
+            'project_ids': sorted(df['ProjectID'].astype(str).unique()),
+            'geology_codes': sorted(df['GeologyCode'].astype(str).unique())
+        }
 
-    # Filter DataFrame based on selected Project ID
+    # Dropdown for Project ID
+    def update_project_ids(selected_geology_code):
+        if selected_geology_code:
+            return sorted(filtered_df[filtered_df['GeologyCode'] == selected_geology_code]['ProjectID'].astype(str).unique())
+        return sorted(filtered_df['ProjectID'].astype(str).unique())
+
+    def update_geology_codes(selected_project_id):
+        if selected_project_id:
+            return sorted(filtered_df[filtered_df['ProjectID'] == selected_project_id]['GeologyCode'].astype(str).unique())
+        return sorted(filtered_df['GeologyCode'].astype(str).unique())
+
+    selected_project_id = st.selectbox("Select Project ID", options=[""] + update_project_ids(st.session_state.get('selected_geology_code', "")))
+
+    # Update geology codes based on selected Project ID
     if selected_project_id:
         filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
 
-    # Update Geology Code options based on the filtered DataFrame
-    geology_codes = sorted(filtered_df['GeologyCode'].astype(str).unique())
-    selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes)
+    # Update session state with filtered geology codes
+    st.session_state.filtered_options['geology_codes'] = update_geology_codes(selected_project_id)
+
+    # Dropdown for Geology Code
+    selected_geology_code = st.selectbox("Select Geology Code", options=[""] + st.session_state.filtered_options['geology_codes'])
 
     # Apply Geology Code filter
     if selected_geology_code:
         filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
+
+    # Store selected geology code in session state
+    st.session_state.selected_geology_code = selected_geology_code
 
     # Show the map with the filtered data
     show_map(filtered_df)
