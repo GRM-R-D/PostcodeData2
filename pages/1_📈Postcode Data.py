@@ -91,6 +91,9 @@ if 'selected_geology_code' not in st.session_state:
 if 'show_widgets' not in st.session_state:
     st.session_state.show_widgets = True
 
+# Initialize plasticity_filter with default values
+plasticity_filter = (int(plasticity_rng[0]), int(plasticity_rng[1]))
+
 # Button to toggle widgets visibility
 if st.button("Toggle Widgets"):
     st.session_state.show_widgets = not st.session_state.show_widgets
