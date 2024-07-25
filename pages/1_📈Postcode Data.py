@@ -93,20 +93,23 @@ if 'selected_project_id' not in st.session_state:
     st.session_state.selected_project_id = ""
 if 'selected_geology_code' not in st.session_state:
     st.session_state.selected_geology_code = ""
-if 'plasticity_filter' not in st.session_state:
-    st.session_state.plasticity_filter = (int(plasticity_rng[0]), int(plasticity_rng[1]))
 
 # Row 1: Filters and Searches
 with row1[0]:
     with st.expander("Plasticity Index Filter", expanded=True):
         plasticity_min, plasticity_max = plasticity_rng
-        st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
-                  value=st.session_state.plasticity_filter, key="plasticity_index")
+        plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
+                                      value=(int(plasticity_min), int(plasticity_max)))
 
 with row1[1]:
     with st.expander("Project ID Search", expanded=True):
         project_ids = sorted(df['ProjectID'].astype(str).unique())
-        st.selectbox("Select Project ID", options=[""] + project_ids, key="project_id")
+        selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids, key="project_id")
+
+        # Update session state for Project ID
+        if selected_project_id != st.session_state.selected_project_id:
+            st.session_state.selected_project_id = selected_project_id
+            st.session_state.selected_geology_code = ""  # Reset Geology Code when Project ID changes
 
 with row1[2]:
     with st.expander("Geology Code Search", expanded=True):
@@ -117,24 +120,15 @@ with row1[2]:
         else:
             geology_codes = sorted(df['GeologyCode'].astype(str).unique())
 
-        st.selectbox("Select Geology Code", options=[""] + geology_codes, key="geology_code")
+        selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes, key="geology_code")
 
-# Add a reset button below the filters
-with row1[0]:
-    if st.button('Reset Filters'):
-        # Reset session state
-        st.session_state.selected_project_id = ""
-        st.session_state.selected_geology_code = ""
-        st.session_state.plasticity_filter = (int(plasticity_rng[0]), int(plasticity_rng[1]))
-
-        # Update widget values directly
-        st.session_state['plasticity_index'] = st.session_state.plasticity_filter
-        st.session_state['project_id'] = ""
-        st.session_state['geology_code'] = ""
+        # Update session state for Geology Code
+        if selected_geology_code != st.session_state.selected_geology_code:
+            st.session_state.selected_geology_code = selected_geology_code
 
 # Apply filters based on selections
-filtered_df = df[(df['PlasticityIndex'] >= st.session_state.plasticity_filter[0]) &
-                 (df['PlasticityIndex'] <= st.session_state.plasticity_filter[1])]
+filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
+                 (df['PlasticityIndex'] <= plasticity_filter[1])]
 
 if st.session_state.selected_project_id:
     filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == st.session_state.selected_project_id]
@@ -185,20 +179,6 @@ columns_to_display = [col for col in columns_to_display if col in df.columns]
 
 # Filter DataFrame for display
 filtered_df_display = filtered_df[columns_to_display]
-
-column_rename_map = {
-    'MoistureContent': 'MC',
-    'PlasticityIndex': 'PI',
-    'PlasticLimit': 'PL',
-    'LiquidLimit': 'LL',
-    'Easting': 'E',
-    'Northing': 'N',
-    'Latitude': 'Lat',
-    'Longitude': 'Lon'
-}
-
-# Apply the renaming to the filtered DataFrame
-filtered_df_display = filtered_df_display.rename(columns=column_rename_map)
 
 # Row 3: Map and DataFrame
 with row3[0]:
