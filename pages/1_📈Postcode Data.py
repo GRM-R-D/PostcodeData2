@@ -84,6 +84,11 @@ col1, col2 = st.columns([2, 2])
 
 with col1:
     st.header("Map")
+    # Show the map with the filtered data
+    show_map(df)
+
+with col2:
+    st.header("Data")
 
     # Add Plasticity Index slider
     plasticity_min, plasticity_max = plasticity_rng
@@ -138,12 +143,6 @@ with col1:
         </div>
         """
     components.html(legend_html, height=200)
-
-    # Show the map with the filtered data
-    show_map(filtered_df)
-
-with col2:
-    st.header("Data")
 
     # Group checkboxes
     show_utm = st.checkbox('Show UTM Coordinates', value=True)
