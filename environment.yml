@@ -1,0 +1,13 @@
+name: myenv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pandas=1.5.3
+  - folium=0.17.0
+  - pygwalker=0.4.9
+  - pip
+  - pip:
+    - streamlit-extras
+    - streamlit-folium
