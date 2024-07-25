@@ -126,17 +126,18 @@ with col1:
 
     # Add a legend for the map
     legend_html = """
-    <div style="position: relative; width: 160px; height: 120px; 
-                background-color: white; border:2px solid grey; font-size:14px;
-                padding: 10px;">
-    <b>Plasticity Index</b><br>
-    <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
-    <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
-    <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 20 - 40<br>
-    <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ≥ 40<br>
-    </div>
-    """
-    st.markdown(legend_html, unsafe_allow_html=True)
+        <div style="position: fixed; 
+                    bottom: 10px; left: 10px; width: 160px; height: 120px; 
+                    background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
+                    padding: 10px;">
+        <b>Plasticity Index</b><br>
+        <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
+        <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
+        <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 20 - 40<br>
+        <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ≥ 40<br>
+        </div>
+        """
+    components.html(legend_html, height=200)
 
     # Show the map with the filtered data
     show_map(filtered_df)
