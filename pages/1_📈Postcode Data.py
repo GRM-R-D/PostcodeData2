@@ -131,7 +131,7 @@ with col2:
     st.header("Legend")
     # Add a legend for the map
     legend_html = """
-    <div style="width: 150px; padding: 10px; border: 2px solid grey; background-color: white; font-size: 14px;">
+    <div style="width: 130px; padding: 10px; border: 2px solid grey; background-color: white; font-size: 14px;">
     <b>Plasticity Index</b><br>
     <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
     <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
