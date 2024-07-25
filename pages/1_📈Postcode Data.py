@@ -38,10 +38,12 @@ st.markdown("# Postcode Data")
 # Add a paragraph to the sidebar
 st.sidebar.markdown("""
 
-     This app allows you to explore GRM project data through an interactive map and detailed project information. You can 
-     filter projects by Plasticity Index, Project ID, and Geology Code.The map shows project locations with 
-     color-coded markers based on Plasticity Index values, helping you compare laboratory data with geology and 
-     location information, as well as explore relationships with nearby projects.
+     This app allows you to explore GRM project data through an interactive map and detailed project information. 
+     
+     You can filter projects by Plasticity Index, Project ID, and Geology Code.
+     
+     The map shows project locations with color-coded markers based on Plasticity Index values, helping you compare 
+     laboratory data with geology and location information, as well as explore relationships with nearby projects.
 
 """)
 
