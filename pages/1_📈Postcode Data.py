@@ -1,0 +1,130 @@
+import streamlit as st
+import pandas as pd
+import folium
+from folium.plugins import MarkerCluster, Geocoder
+from streamlit_folium import folium_static
+from Home import add_logo
+
+# Set up the page configuration
+st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
+
+# Add logo to the app
+logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-master-logo-02.png"
+add_logo(logo_url, height=100)
+
+# Set the title and sidebar header
+st.markdown("# Postcode Data")
+st.sidebar.header("Postcode Data")
+st.write("This page shows a table of UK postcodes and their corresponding Atterberg Limits")
+
+# Read and preprocess the CSV data
+filename = 'Points.csv'  # replace with your actual CSV file path
+df = pd.read_csv(filename)
+
+# Determine the range for Plasticity Index slider
+plasticity_rng = (df['PlasticityIndex'].min(), df['PlasticityIndex'].max())
+
+
+def get_color(plasticity_index):
+    if plasticity_index >= 40:
+        return 'red'
+    elif 20 <= plasticity_index < 40:
+        return 'orange'
+    elif 10 <= plasticity_index < 20:
+        return 'yellow'
+    else:
+        return 'green'
+
+
+def create_map(filtered_df):
+    m = folium.Map(location=[filtered_df['Latitude'].mean(), filtered_df['Longitude'].mean()], zoom_start=6)
+    marker_cluster = MarkerCluster().add_to(m)
+
+    # Iterate over the filtered DataFrame rows and add markers to the cluster
+    for _, row in filtered_df.iterrows():
+        location = [row['Latitude'], row['Longitude']]
+        popup_content = (
+            f"Postcode: {row['Postcode']}<br>"
+            f"Project ID: {row['ProjectID']}<br>"
+            f"Geology: {row['GeologyCode']}<br>"
+            f"Plastic Limit: {row['PlasticLimit']}<br>"
+            f"Liquid Limit: {row['LiquidLimit']}<br>"
+            f"Plasticity Index: {row['PlasticityIndex']}<br>"
+            f"Moisture Content: {row['MoistureContent']}"
+        )
+        popup = folium.Popup(popup_content, max_width=300)
+        folium.Marker(location=location, popup=popup, icon=folium.Icon(color=get_color(row['PlasticityIndex']))).add_to(
+            marker_cluster)
+
+    # Add Geocoder plugin
+    Geocoder().add_to(m)
+    return m
+
+
+def show_map(filtered_df):
+    m = create_map(filtered_df)  # Create the map with the filtered data
+    folium_static(m)  # Display the map
+
+
+# Create a two-column layout
+col1, col2 = st.columns([2, 2])
+
+with col1:
+    st.header("Map")
+
+    # Add Plasticity Index slider
+    plasticity_min, plasticity_max = plasticity_rng
+    plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
+                                  value=(int(plasticity_min), int(plasticity_max)))
+
+    # Apply Plasticity Index filter
+    filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
+                     (df['PlasticityIndex'] <= plasticity_filter[1])]
+
+    # Show the map with the filtered data
+    show_map(filtered_df)
+
+with col2:
+    st.header("Data")
+
+    # Group checkboxes
+    show_utm = st.checkbox('Show UTM Coordinates', value=True)
+    show_latlong = st.checkbox('Show LATLONG Coordinates', value=True)
+
+    # Define column groups
+    utm_columns = ['Easting', 'Northing']
+    latlong_columns = ['Latitude', 'Longitude']
+
+    # Determine which columns to display
+    columns_to_display = []
+    if show_utm:
+        columns_to_display.extend(utm_columns)
+    if show_latlong:
+        columns_to_display.extend(latlong_columns)
+
+    # Always show these columns and reorder them
+    always_display_columns = ['ProjectID', 'LocationID', 'Postcode', 'GeologyCode', 'PlasticLimit', 'LiquidLimit',
+                              'PlasticityIndex', 'MoistureContent']
+
+    # Combine always displayed columns with selected columns
+    columns_to_display = always_display_columns + columns_to_display
+
+    # Ensure only existing columns are included
+    columns_to_display = [col for col in columns_to_display if col in df.columns]
+
+    # Dropdown for Project ID and Geology Code
+    project_ids = df['ProjectID'].astype(str).unique()
+    geology_codes = df['GeologyCode'].astype(str).unique()
+
+    selected_project_id = st.selectbox("Select Project ID", options=[""] + sorted(project_ids))
+    selected_geology_code = st.selectbox("Select Geology Code", options=[""] + sorted(geology_codes))
+
+    # Filter DataFrame based on selection
+    if selected_project_id:
+        filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
+    if selected_geology_code:
+        filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
+
+    # Filter DataFrame for display
+    filtered_df_display = filtered_df[columns_to_display]
+    st.dataframe(filtered_df_display, hide_index=True)

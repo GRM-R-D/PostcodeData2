@@ -1,0 +1,1 @@
+: UserWarning: color argument of Icon should be one of: {'red', 'black', 'orange', 'darkred', 'darkpurple', 'pink', 'blue', 'purple', 'lightred', 'white', 'darkblue', 'gray', 'beige', 'darkgreen', 'lightgray', 'cadetblue', 'lightgreen', 'lightblue', 'green'}.
