@@ -75,8 +75,8 @@ def create_map(filter_df):
     Geocoder().add_to(m)
     return m
 
-def show_map(filter_df):
-    m = create_map(filter_df)  # Create the map with the filtered data
+def show_map(filtered_df):
+    m = create_map(filtered_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
 
 # Create a two-column layout
