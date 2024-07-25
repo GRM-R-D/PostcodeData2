@@ -8,6 +8,7 @@ import streamlit.components.v1 as components
 # Set up the page configuration
 st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
 
+
 @st.cache_resource
 def add_logo(logo_url: str, width: int = 250, height: int = 300):
     """Add a logo (from logo_url) on the top of the navigation page of a multipage app."""
@@ -23,6 +24,7 @@ def add_logo(logo_url: str, width: int = 250, height: int = 300):
         </style>
     """
     st.markdown(logo_css, unsafe_allow_html=True)
+
 
 # URL of the logo image
 logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-master-logo-02.png"
@@ -41,6 +43,7 @@ df = pd.read_csv(filename)
 # Determine the range for Plasticity Index slider
 plasticity_rng = (df['PlasticityIndex'].min(), df['PlasticityIndex'].max())
 
+
 def get_color(plasticity_index):
     if plasticity_index >= 40:
         return 'red'
@@ -51,7 +54,12 @@ def get_color(plasticity_index):
     else:
         return 'green'
 
+
 def create_map(filter_df):
+    # Check if the filtered DataFrame is empty
+    if filter_df.empty:
+        return folium.Map(location=[0, 0], zoom_start=6)  # Default location if no data
+
     m = folium.Map(location=[filter_df['Latitude'].mean(), filter_df['Longitude'].mean()], zoom_start=6)
     marker_cluster = MarkerCluster().add_to(m)
 
@@ -75,57 +83,64 @@ def create_map(filter_df):
     Geocoder().add_to(m)
     return m
 
-def show_map(filter_df):
-    m = create_map(filter_df)  # Create the map with the filtered data
+
+def show_map(filtered_df):
+    m = create_map(filtered_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
 
-# Create the layout
-st.header("Filters")
-# Create filter and search boxes in a row
-filter_col1, filter_col2 = st.columns([2, 1])
 
-with filter_col1:
-    # Add Plasticity Index slider
+# Define the layout using Streamlit's grid system
+row1 = st.columns([2, 1, 1])
+row2 = st.columns([1, 1])
+row3 = st.columns([2, 2])
+
+# Initialize session state variables if not already present
+if 'selected_project_id' not in st.session_state:
+    st.session_state.selected_project_id = ""
+if 'selected_geology_code' not in st.session_state:
+    st.session_state.selected_geology_code = ""
+
+# Row 1: Filters and Searches
+with row1[0]:
     plasticity_min, plasticity_max = plasticity_rng
     plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
                                   value=(int(plasticity_min), int(plasticity_max)))
 
-    # Apply Plasticity Index filter
-    filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
-                     (df['PlasticityIndex'] <= plasticity_filter[1])]
+with row1[1]:
+    project_ids = sorted(df['ProjectID'].astype(str).unique())
+    selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids, key="project_id")
 
-    # Store filtered options in session state
-    if 'filtered_options' not in st.session_state:
-        st.session_state.filtered_options = {
-            'project_ids': sorted(df['ProjectID'].astype(str).unique()),
-            'geology_codes': sorted(df['GeologyCode'].astype(str).unique())
-        }
+    # Update session state for Project ID
+    if selected_project_id != st.session_state.selected_project_id:
+        st.session_state.selected_project_id = selected_project_id
+        st.session_state.selected_geology_code = ""  # Reset Geology Code when Project ID changes
 
-    # Dropdown for Project ID
-    project_ids = sorted(filtered_df['ProjectID'].astype(str).unique())
-    selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids)
-
-    # Update geology codes based on selected Project ID
-    if selected_project_id:
-        filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
-
-    # Update session state with filtered geology codes
-    if selected_project_id:
-        geology_codes = sorted(filtered_df['GeologyCode'].astype(str).unique())
-        st.session_state.filtered_options['geology_codes'] = geology_codes
+with row1[2]:
+    # Update Geology Code options based on selected Project ID
+    if st.session_state.selected_project_id:
+        geology_codes = sorted(
+            df[df['ProjectID'].astype(str) == st.session_state.selected_project_id]['GeologyCode'].astype(str).unique())
     else:
-        st.session_state.filtered_options['geology_codes'] = sorted(df['GeologyCode'].astype(str).unique())
+        geology_codes = sorted(df['GeologyCode'].astype(str).unique())
 
-    # Dropdown for Geology Code
-    geology_codes = st.session_state.filtered_options['geology_codes']
-    selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes)
+    selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes, key="geology_code")
 
-    # Apply Geology Code filter
-    if selected_geology_code:
-        filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
+    # Update session state for Geology Code
+    if selected_geology_code != st.session_state.selected_geology_code:
+        st.session_state.selected_geology_code = selected_geology_code
 
-with filter_col2:
-    # Add a legend for the map
+# Apply filters based on selections
+filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
+                 (df['PlasticityIndex'] <= plasticity_filter[1])]
+
+if st.session_state.selected_project_id:
+    filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == st.session_state.selected_project_id]
+
+if st.session_state.selected_geology_code:
+    filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == st.session_state.selected_geology_code]
+
+# Row 2: Legend and Checkboxes
+with row2[0]:
     legend_html = """
         <div style="position: fixed; 
                     bottom: 10px; left: 10px; width: 160px; height: 120px; 
@@ -140,41 +155,40 @@ with filter_col2:
         """
     components.html(legend_html, height=200)
 
-# Create a two-column layout for map and table
-map_col, table_col = st.columns([2, 2])
+with row2[1]:
+    show_utm = st.checkbox('Show UTM Coordinates', value=True)
+    show_latlong = st.checkbox('Show LATLONG Coordinates', value=True)
 
-with map_col:
+# Define column groups
+utm_columns = ['Easting', 'Northing']
+latlong_columns = ['Latitude', 'Longitude']
+
+# Determine which columns to display
+columns_to_display = []
+if show_utm:
+    columns_to_display.extend(utm_columns)
+if show_latlong:
+    columns_to_display.extend(latlong_columns)
+
+# Always show these columns and reorder them
+always_display_columns = ['ProjectID', 'LocationID', 'Postcode', 'GeologyCode', 'PlasticLimit', 'LiquidLimit',
+                          'PlasticityIndex', 'MoistureContent']
+
+# Combine always displayed columns with selected columns
+columns_to_display = always_display_columns + columns_to_display
+
+# Ensure only existing columns are included
+columns_to_display = [col for col in columns_to_display if col in df.columns]
+
+# Filter DataFrame for display
+filtered_df_display = filtered_df[columns_to_display]
+
+# Row 3: Map and DataFrame
+with row3[0]:
     st.header("Map")
     # Show the map with the filtered data
     show_map(filtered_df)
 
-with table_col:
-    st.header("Data")
-    # Group checkboxes
-    show_utm = st.checkbox('Show UTM Coordinates', value=True)
-    show_latlong = st.checkbox('Show LATLONG Coordinates', value=True)
-
-    # Define column groups
-    utm_columns = ['Easting', 'Northing']
-    latlong_columns = ['Latitude', 'Longitude']
-
-    # Determine which columns to display
-    columns_to_display = []
-    if show_utm:
-        columns_to_display.extend(utm_columns)
-    if show_latlong:
-        columns_to_display.extend(latlong_columns)
-
-    # Always show these columns and reorder them
-    always_display_columns = ['ProjectID', 'LocationID', 'Postcode', 'GeologyCode', 'PlasticLimit', 'LiquidLimit',
-                              'PlasticityIndex', 'MoistureContent']
-
-    # Combine always displayed columns with selected columns
-    columns_to_display = always_display_columns + columns_to_display
-
-    # Ensure only existing columns are included
-    columns_to_display = [col for col in columns_to_display if col in df.columns]
-
-    # Filter DataFrame for display
-    filtered_df_display = filtered_df[columns_to_display]
+with row3[1]:
+    st.header("Table")
     st.dataframe(filtered_df_display, hide_index=True)
