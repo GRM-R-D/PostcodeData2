@@ -168,7 +168,7 @@ with row2[0]:
                     white-space: nowrap;
                     font-family: 'Arial', sans-serif;
                     color: #333;">
-        <b style="font-family: 'Arial', sans-serif;">Plasticity Index</b><br>
+        <b style="font-family: 'Arial', sans-serif; display: block; margin-bottom: 10px;">Plasticity Index</b>
         <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10
         <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> 10 - 20
         <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> 20 - 40
