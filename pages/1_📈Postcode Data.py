@@ -3,6 +3,7 @@ import pandas as pd
 import folium
 from folium.plugins import MarkerCluster, Geocoder
 from streamlit_folium import folium_static
+import branca
 
 # Set up the page configuration
 st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
@@ -76,6 +77,37 @@ def create_map(filter_df):
 
     # Add Geocoder plugin
     Geocoder().add_to(m)
+
+    # Add a custom legend to the map
+    legend_html = """
+    {% macro html(this, kwargs) %}
+    <div style="
+        position: fixed;
+        bottom: 50px;
+        left: 50px;
+        width: 250px;
+        height: 120px;
+        z-index:9999;
+        font-size:14px;
+        ">
+        <div style="
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            ">
+            <p><span style="background-color:green; color: green; font-size:150%; padding: 5px;">◼</span> Plasticity Index < 10</p>
+            <p><span style="background-color:yellow; color: yellow; font-size:150%; padding: 5px;">◼</span> 10 ≤ Plasticity Index < 20</p>
+            <p><span style="background-color:orange; color: orange; font-size:150%; padding: 5px;">◼</span> 20 ≤ Plasticity Index < 40</p>
+            <p><span style="background-color:red; color: red; font-size:150%; padding: 5px;">◼</span> Plasticity Index ≥ 40</p>
+        </div>
+    </div>
+    {% endmacro %}
+    """
+    legend = branca.element.MacroElement()
+    legend._template = branca.element.Template(legend_html)
+    m.get_root().add_child(legend)
+
     return m
 
 
@@ -99,30 +131,16 @@ with col1:
     filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
                      (df['PlasticityIndex'] <= plasticity_filter[1])]
 
-    # Store filtered options in session state
-    if 'filtered_options' not in st.session_state:
-        st.session_state.filtered_options = {
-            'project_ids': sorted(df['ProjectID'].astype(str).unique()),
-            'geology_codes': sorted(df['GeologyCode'].astype(str).unique())
-        }
-
     # Dropdown for Project ID
     project_ids = sorted(filtered_df['ProjectID'].astype(str).unique())
     selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids)
 
-    # Update geology codes based on selected Project ID
+    # Filter DataFrame based on selected Project ID
     if selected_project_id:
         filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
 
-    # Update session state with filtered geology codes
-    if selected_project_id:
-        geology_codes = sorted(filtered_df['GeologyCode'].astype(str).unique())
-        st.session_state.filtered_options['geology_codes'] = geology_codes
-    else:
-        st.session_state.filtered_options['geology_codes'] = sorted(df['GeologyCode'].astype(str).unique())
-
-    # Dropdown for Geology Code
-    geology_codes = st.session_state.filtered_options['geology_codes']
+    # Update Geology Code options based on the filtered DataFrame
+    geology_codes = sorted(filtered_df['GeologyCode'].astype(str).unique())
     selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes)
 
     # Apply Geology Code filter
