@@ -83,34 +83,26 @@ def show_map(filtered_df):
     m = create_map(filtered_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
 
-# Initialize session state variables if not already present
-if 'selected_project_id' not in st.session_state:
-    st.session_state.selected_project_id = ""
-if 'selected_geology_code' not in st.session_state:
-    st.session_state.selected_geology_code = ""
-if 'show_widgets' not in st.session_state:
-    st.session_state.show_widgets = True
-
-# Initialize plasticity_filter with default values
-plasticity_filter = (int(plasticity_rng[0]), int(plasticity_rng[1]))
-
-# Button to toggle widgets visibility
-if st.button("Toggle Widgets"):
-    st.session_state.show_widgets = not st.session_state.show_widgets
-
 # Define the layout using Streamlit's grid system
 row1 = st.columns([2, 1, 1])
 row2 = st.columns([1, 1])
 row3 = st.columns([2, 2])
 
+# Initialize session state variables if not already present
+if 'selected_project_id' not in st.session_state:
+    st.session_state.selected_project_id = ""
+if 'selected_geology_code' not in st.session_state:
+    st.session_state.selected_geology_code = ""
+
 # Row 1: Filters and Searches
-if st.session_state.show_widgets:
-    with row1[0]:
+with row1[0]:
+    with st.expander("Plasticity Index Filter", expanded=True):
         plasticity_min, plasticity_max = plasticity_rng
         plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
                                       value=(int(plasticity_min), int(plasticity_max)))
 
-    with row1[1]:
+with row1[1]:
+    with st.expander("Project ID Search", expanded=True):
         project_ids = sorted(df['ProjectID'].astype(str).unique())
         selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids, key="project_id")
 
@@ -119,7 +111,8 @@ if st.session_state.show_widgets:
             st.session_state.selected_project_id = selected_project_id
             st.session_state.selected_geology_code = ""  # Reset Geology Code when Project ID changes
 
-    with row1[2]:
+with row1[2]:
+    with st.expander("Geology Code Search", expanded=True):
         # Update Geology Code options based on selected Project ID
         if st.session_state.selected_project_id:
             geology_codes = sorted(
