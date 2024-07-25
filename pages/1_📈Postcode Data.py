@@ -34,7 +34,6 @@ add_logo(logo_url, height=100)
 
 # Set the title and sidebar header
 st.markdown("# Postcode Data")
-st.write("This page shows a table of projects with their locations and their corresponding Atterberg Limits")
 
 # Add a paragraph to the sidebar
 st.sidebar.markdown("""
@@ -46,8 +45,6 @@ st.sidebar.markdown("""
     
     This application can be used to compare laboratory data to other elements of project data, including geology and 
     location, as well as relationships to other nearby projects
-    
-    (Use the checkboxes to toggle the display of UTM and Latitude/Longitude coordinates in the data table.)
 
 """)
 
@@ -180,6 +177,7 @@ with row2[0]:
 with row2[1]:
     show_utm = st.checkbox('Show UTM Coordinates', value=True)
     show_latlong = st.checkbox('Show LATLONG Coordinates', value=True)
+    st.caption("Use the checkboxes to toggle the display of UTM and Latitude/Longitude coordinates in the data table.")
 
 # Define column groups
 utm_columns = ['Easting', 'Northing']
