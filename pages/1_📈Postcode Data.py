@@ -79,12 +79,12 @@ def show_map(filter_df):
     m = create_map(filter_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
 
-# Create a two-column layout
-col1, col2 = st.columns([2, 2])
+# Create the layout
+st.header("Filters")
+# Create filter and search boxes in a row
+filter_col1, filter_col2 = st.columns([2, 1])
 
-with col1:
-    st.header("Map")
-
+with filter_col1:
     # Add Plasticity Index slider
     plasticity_min, plasticity_max = plasticity_rng
     plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
@@ -124,6 +124,7 @@ with col1:
     if selected_geology_code:
         filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
 
+with filter_col2:
     # Add a legend for the map
     legend_html = """
         <div style="position: fixed; 
@@ -139,12 +140,16 @@ with col1:
         """
     components.html(legend_html, height=200)
 
+# Create a two-column layout for map and table
+map_col, table_col = st.columns([2, 2])
+
+with map_col:
+    st.header("Map")
     # Show the map with the filtered data
     show_map(filtered_df)
 
-with col2:
+with table_col:
     st.header("Data")
-
     # Group checkboxes
     show_utm = st.checkbox('Show UTM Coordinates', value=True)
     show_latlong = st.checkbox('Show LATLONG Coordinates', value=True)
