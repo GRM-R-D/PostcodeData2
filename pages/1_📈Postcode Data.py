@@ -126,11 +126,12 @@ with row1[2]:
         if selected_geology_code != st.session_state.selected_geology_code:
             st.session_state.selected_geology_code = selected_geology_code
 
-# Add a reset button
-if st.button('Reset Filters'):
-    st.session_state.selected_project_id = ""
-    st.session_state.selected_geology_code = ""
-    plasticity_filter = (int(plasticity_rng[0]), int(plasticity_rng[1]))
+# Add a reset button below the filters
+with row1[0]:
+    if st.button('Reset Filters'):
+        st.session_state.selected_project_id = ""
+        st.session_state.selected_geology_code = ""
+        plasticity_filter = (int(plasticity_rng[0]), int(plasticity_rng[1]))
 
 # Apply filters based on selections
 filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
