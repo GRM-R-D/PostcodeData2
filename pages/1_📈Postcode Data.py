@@ -154,7 +154,7 @@ if st.session_state.selected_geology_code:
 
 # Row 2: Legend and Checkboxes
 with row2[0]:
-    legend_html = """<div style="position: fixed; bottom: 20px; left: 10px; width: auto; height: 40px; 
+    legend_html = """<div style="position: fixed; bottom: 50px; left: 10px; width: auto; height: 40px; 
     background-color: black; border:2px solid grey; border-radius:3px; z-index:9999; font-size:14px; padding: 10px;
     white-space: nowrap; font-family: 'Arial', sans-serif; color: #FAFAFA;"> <b style="font-family: 'Arial', 
     sans-serif; display: block; margin-bottom: 10px;">Plasticity Index</b> <i style="background:green; width: 20px; 
