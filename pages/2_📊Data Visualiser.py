@@ -26,6 +26,14 @@ def add_logo(logo_url: str, width: int = 250, height: int = 300):
     st.markdown(logo_css, unsafe_allow_html=True)
 
 
+st.sidebar.markdown("""
+
+     This app allows you to further explore the data by allowing you to manipulate the data in any way you want. You 
+     can use this tool to compare any data fields and produce any desired output, such as bar charts, scatter plots 
+     and custom tables, in order to personalise your analysis and discover trends in the data.
+
+""")
+
 # URL of the logo image
 logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-master-logo-02.png"
 
