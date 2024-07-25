@@ -79,96 +79,86 @@ def show_map(filtered_df):
     m = create_map(filtered_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
 
-# Create a two-column layout
-col1, col2 = st.columns([2, 2])
+# Create a three-column layout for filters
+col1, col2, col3 = st.columns([1, 2, 1])
 
-with col2:
-    st.header("Filters and Data")
-
+with col1:
     # Add Plasticity Index slider
     plasticity_min, plasticity_max = plasticity_rng
     plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
                                   value=(int(plasticity_min), int(plasticity_max)))
 
-    # Apply Plasticity Index filter
-    filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
-                     (df['PlasticityIndex'] <= plasticity_filter[1])]
-
-    # Store filtered options in session state
-    if 'filtered_options' not in st.session_state:
-        st.session_state.filtered_options = {
-            'project_ids': sorted(df['ProjectID'].astype(str).unique()),
-            'geology_codes': sorted(df['GeologyCode'].astype(str).unique())
-        }
-
-    # Dropdown for Project ID
-    project_ids = sorted(filtered_df['ProjectID'].astype(str).unique())
+with col2:
+    # Add Project ID dropdown
+    project_ids = sorted(df['ProjectID'].astype(str).unique())
     selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids)
 
-    # Update geology codes based on selected Project ID
-    if selected_project_id:
-        filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
-
-    # Update session state with filtered geology codes
-    if selected_project_id:
-        geology_codes = sorted(filtered_df['GeologyCode'].astype(str).unique())
-        st.session_state.filtered_options['geology_codes'] = geology_codes
-    else:
-        st.session_state.filtered_options['geology_codes'] = sorted(df['GeologyCode'].astype(str).unique())
-
-    # Dropdown for Geology Code
-    geology_codes = st.session_state.filtered_options['geology_codes']
+with col3:
+    # Add Geology Code dropdown
+    geology_codes = sorted(df['GeologyCode'].astype(str).unique())
     selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes)
 
-    # Apply Geology Code filter
-    if selected_geology_code:
-        filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
+# Apply filters based on selections
+filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
+                 (df['PlasticityIndex'] <= plasticity_filter[1])]
 
-    # Add a legend for the map
-    legend_html = """
-        <div style="position: fixed; 
-                    bottom: 10px; left: 10px; width: 160px; height: 120px; 
-                    background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
-                    padding: 10px;">
-        <b>Plasticity Index</b><br>
-        <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
-        <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
-        <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 20 - 40<br>
-        <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ≥ 40<br>
-        </div>
-        """
-    components.html(legend_html, height=200)
+if selected_project_id:
+    filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
 
-    # Group checkboxes
-    show_utm = st.checkbox('Show UTM Coordinates', value=True)
-    show_latlong = st.checkbox('Show LATLONG Coordinates', value=True)
+if selected_geology_code:
+    filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
 
-    # Define column groups
-    utm_columns = ['Easting', 'Northing']
-    latlong_columns = ['Latitude', 'Longitude']
+# Add a legend for the map
+legend_html = """
+    <div style="position: fixed; 
+                bottom: 10px; left: 10px; width: 160px; height: 120px; 
+                background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
+                padding: 10px;">
+    <b>Plasticity Index</b><br>
+    <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
+    <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
+    <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 20 - 40<br>
+    <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ≥ 40<br>
+    </div>
+    """
+components.html(legend_html, height=200)
 
-    # Determine which columns to display
-    columns_to_display = []
-    if show_utm:
-        columns_to_display.extend(utm_columns)
-    if show_latlong:
-        columns_to_display.extend(latlong_columns)
+# Group checkboxes
+show_utm = st.checkbox('Show UTM Coordinates', value=True)
+show_latlong = st.checkbox('Show LATLONG Coordinates', value=True)
 
-    # Always show these columns and reorder them
-    always_display_columns = ['ProjectID', 'LocationID', 'Postcode', 'GeologyCode', 'PlasticLimit', 'LiquidLimit',
-                              'PlasticityIndex', 'MoistureContent']
+# Define column groups
+utm_columns = ['Easting', 'Northing']
+latlong_columns = ['Latitude', 'Longitude']
 
-    # Combine always displayed columns with selected columns
-    columns_to_display = always_display_columns + columns_to_display
+# Determine which columns to display
+columns_to_display = []
+if show_utm:
+    columns_to_display.extend(utm_columns)
+if show_latlong:
+    columns_to_display.extend(latlong_columns)
 
-    # Ensure only existing columns are included
-    columns_to_display = [col for col in columns_to_display if col in df.columns]
+# Always show these columns and reorder them
+always_display_columns = ['ProjectID', 'LocationID', 'Postcode', 'GeologyCode', 'PlasticLimit', 'LiquidLimit',
+                          'PlasticityIndex', 'MoistureContent']
 
-    # Filter DataFrame for display
-    filtered_df_display = filtered_df[columns_to_display]
-    st.dataframe(filtered_df_display, hide_index=True)
+# Combine always displayed columns with selected columns
+columns_to_display = always_display_columns + columns_to_display
+
+# Ensure only existing columns are included
+columns_to_display = [col for col in columns_to_display if col in df.columns]
+
+# Filter DataFrame for display
+filtered_df_display = filtered_df[columns_to_display]
+
+# Create a two-column layout for map and table
+col1, col2 = st.columns([2, 2])
 
 with col1:
     st.header("Map")
     # Show the map with the filtered data from col2
     show_map(filtered_df)
+
+with col2:
+    st.header("Table")
+    st.dataframe(filtered_df_display, hide_index=True)
