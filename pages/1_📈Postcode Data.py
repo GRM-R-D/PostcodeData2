@@ -171,6 +171,23 @@ if show_latlong:
 always_display_columns = ['ProjectID', 'LocationID', 'Postcode', 'GeologyCode', 'PlasticLimit', 'LiquidLimit',
                           'PlasticityIndex', 'MoistureContent']
 
+column_rename_map = {
+    'MoistureContent': 'MC',
+    'PlasticityIndex': 'PI',
+    'PlasticLimit': 'PL',
+    'LiquidLimit': 'LL',
+    'Easting': 'E',
+    'Northing': 'N',
+    'Latitude': 'Lat',
+    'Longitude': 'Lon'
+}
+
+# Apply the renaming to the filtered DataFrame
+filtered_df_display = filtered_df[columns_to_display].rename(columns=column_rename_map)
+
+# Display the DataFrame with renamed columns
+st.dataframe(filtered_df_display, hide_index=True)
+
 # Combine always displayed columns with selected columns
 columns_to_display = always_display_columns + columns_to_display
 
