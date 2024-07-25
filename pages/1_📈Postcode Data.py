@@ -128,7 +128,6 @@ with col1:
     show_map(filtered_df)
 
 with col2:
-    st.header("Legend")
     # Add a legend for the map
     legend_html = """
     <div style="width: 130px; padding: 10px; border: 2px solid grey; background-color: white; font-size: 14px;">
