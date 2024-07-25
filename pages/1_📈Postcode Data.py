@@ -219,12 +219,11 @@ filtered_df_display = filtered_df_display.rename(columns=column_rename_map)
 
 # Row 3: Map and DataFrame
 with row3[0]:
-    st.subheader("Map")
-    st.divider()
+    st.subheader("Map", divider=True)
+
     # Show the map with the filtered data
     show_map(filtered_df)
 
 with row3[1]:
-    st.subheader("Table")
-    st.divider()
+    st.subheader("Table", divider=True)
     st.dataframe(filtered_df_display, hide_index=True)
