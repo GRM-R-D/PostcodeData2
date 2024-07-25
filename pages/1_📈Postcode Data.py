@@ -181,10 +181,11 @@ columns_to_display = [col for col in columns_to_display if col in df.columns]
 filtered_df_display = filtered_df[columns_to_display]
 
 column_rename_map = {
-    'MoistureContent': 'MC',
-    'PlasticityIndex': 'PI',
-    'PlasticLimit': 'PL',
-    'LiquidLimit': 'LL',
+    'GeologyCode': 'Geology',
+    'MoistureContent': 'MC (%)',
+    'PlasticityIndex': 'PI (%)',
+    'PlasticLimit': 'PL (%)',
+    'LiquidLimit': 'LL (%)',
     'Easting': 'E',
     'Northing': 'N',
     'Latitude': 'Lat',
