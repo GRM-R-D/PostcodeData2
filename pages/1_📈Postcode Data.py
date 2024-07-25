@@ -184,7 +184,7 @@ if show_latlong:
     columns_to_display.extend(latlong_columns)
 
 # Always show these columns and reorder them
-always_display_columns = ['ProjectID', 'LocationID', 'Postcode', 'Fines' 'GeologyCode', 'PlasticLimit', 'LiquidLimit',
+always_display_columns = ['ProjectID', 'LocationID', 'Postcode', 'Fines', 'GeologyCode', 'PlasticLimit', 'LiquidLimit',
                           'PlasticityIndex', 'MoistureContent']
 
 # Combine always displayed columns with selected columns
