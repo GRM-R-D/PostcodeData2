@@ -34,19 +34,20 @@ add_logo(logo_url, height=100)
 
 # Set the title and sidebar header
 st.markdown("# Postcode Data")
-st.write("This page shows a table of UK postcodes and their corresponding Atterberg Limits")
+st.write("This page shows a table of projects with their locations and their corresponding Atterberg Limits")
 
 # Add a paragraph to the sidebar
 st.sidebar.markdown("""
     **Welcome to the Postcode Data Explorer!**
 
-    This application allows you to explore and analyze UK postcode data related to Atterberg Limits. 
-    You can filter data based on Plasticity Index, Project ID, and Geology Code. The interactive map 
-    displays locations with different color codes based on Plasticity Index values. Use the checkboxes 
-    to toggle the display of UTM and Latitude/Longitude coordinates in the data table.
+    This application allows you to explore GRM project data. This includes a map of project locations, and detailed 
+    information on each project. You can filter data based on Plasticity Index, Project ID, and Geology Code. The 
+    interactive map displays LocationID markers of projects, with different color codes based on Plasticity Index values.
     
-    This application can be used to compare Volume Change Potential by locations and geologies, as well as 
-    relationships to other nearby projects
+    This application can be used to compare laboratory data to other elements of project data, including geology and 
+    location, as well as relationships to other nearby projects
+    
+    (Use the checkboxes to toggle the display of UTM and Latitude/Longitude coordinates in the data table.)
 
 """)
 
@@ -159,14 +160,20 @@ if st.session_state.selected_geology_code:
 
 # Row 2: Legend and Checkboxes
 with row2[0]:
-    legend_html = """<div style="position: fixed; bottom: 10px; left: 10px; width: 160px; height: 120px; 
-    background-color: white; border:2px solid grey; z-index:9999; font-size:14px; padding: 10px;"> <b>Plasticity 
-    Index</b><br> <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 
-    5px;"></i> < 10<br> <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 
-    5px;"></i> 10 - 20<br> <i style="background:orange; width: 20px; height: 20px; display: inline-block; 
-    margin-right: 5px;"></i> 20 - 40<br> <i style="background:red; width: 20px; height: 20px; display: inline-block; 
-    margin-right: 5px;"></i> ≥ 40<br> </div>"""
-    components.html(legend_html, height=200)
+    legend_html = """
+        <div style="position: fixed; 
+                    bottom: 10px; left: 10px; width: auto; height: 50px; 
+                    background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
+                    padding: 10px;
+                    white-space: nowrap;">
+        <b>Plasticity Index</b><br>
+        <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10
+        <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> 10 - 20
+        <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> 20 - 40
+        <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> ≥ 40
+        </div>
+        """
+    components.html(legend_html, height=60)
 
 with row2[1]:
     show_utm = st.checkbox('Show UTM Coordinates', value=True)
