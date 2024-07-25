@@ -37,14 +37,11 @@ st.markdown("# Postcode Data")
 
 # Add a paragraph to the sidebar
 st.sidebar.markdown("""
-    **Welcome to the Postcode Data Explorer!**
 
-    This application allows you to explore GRM project data. This includes a map of project locations, and detailed 
-    information on each project. You can filter data based on Plasticity Index, Project ID, and Geology Code. The 
-    interactive map displays LocationID markers of projects, with different color codes based on Plasticity Index values.
-    
-    This application can be used to compare laboratory data to other elements of project data, including geology and 
-    location, as well as relationships to other nearby projects
+     This app lets you explore GRM project data through an interactive map and detailed project information. You can 
+     filter projects by Plasticity Index, Project ID, and Geology Code.The map shows project locations with 
+     color-coded markers based on Plasticity Index values, helping you compare laboratory data with geology and 
+     location information, as well as explore relationships with nearby projects.
 
 """)
 
@@ -157,21 +154,15 @@ if st.session_state.selected_geology_code:
 
 # Row 2: Legend and Checkboxes
 with row2[0]:
-    legend_html = """
-        <div style="position: fixed; 
-                    bottom: 10px; left: 10px; width: auto; height: 50px; 
-                    background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
-                    padding: 10px;
-                    white-space: nowrap;
-                    font-family: 'Arial', sans-serif;
-                    color: #333;">
-        <b style="font-family: 'Arial', sans-serif; display: block; margin-bottom: 10px;">Plasticity Index</b>
-        <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10
-        <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> 10 - 20
-        <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> 20 - 40
-        <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> ≥ 40
-        </div>
-        """
+    legend_html = """<div style="position: fixed; bottom: 10px; left: 10px; width: auto; height: 50px; 
+    background-color: white; border:2px solid grey; z-index:9999; font-size:14px; padding: 10px; white-space: nowrap; 
+    font-family: 'Arial', sans-serif; color: #333;"> <b style="font-family: 'Arial', sans-serif; display: block; 
+    margin-bottom: 10px;">Plasticity Index</b> <i style="background:green; width: 20px; height: 20px; display: 
+    inline-block; margin-right: 5px;"></i> < 10 <i style="background:yellow; width: 20px; height: 20px; display: 
+    inline-block; margin-right: 5px; margin-left: 10px;"></i> 10 - 20 <i style="background:orange; width: 20px; 
+    height: 20px; display: inline-block; margin-right: 5px; margin-left: 10px;"></i> 20 - 40 <i 
+    style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px; margin-left: 
+    10px;"></i> ≥ 40 </div>"""
     components.html(legend_html, height=80)
 
 with row2[1]:
@@ -219,11 +210,11 @@ filtered_df_display = filtered_df_display.rename(columns=column_rename_map)
 
 # Row 3: Map and DataFrame
 with row3[0]:
-    st.subheader("Map", divider=True)
+    st.subheader("Map", divider='grey')
 
     # Show the map with the filtered data
     show_map(filtered_df)
 
 with row3[1]:
-    st.subheader("Table", divider=True)
+    st.subheader("Table", divider='grey')
     st.dataframe(filtered_df_display, hide_index=True)
