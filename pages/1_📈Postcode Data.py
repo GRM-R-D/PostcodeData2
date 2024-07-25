@@ -36,12 +36,12 @@ def get_color(plasticity_index):
         return 'green'
 
 
-def create_map(filtered_df):
-    m = folium.Map(location=[filtered_df['Latitude'].mean(), filtered_df['Longitude'].mean()], zoom_start=6)
+def create_map(filter_df):
+    m = folium.Map(location=[filter_df['Latitude'].mean(), filter_df['Longitude'].mean()], zoom_start=6)
     marker_cluster = MarkerCluster().add_to(m)
 
     # Iterate over the filtered DataFrame rows and add markers to the cluster
-    for _, row in filtered_df.iterrows():
+    for _, row in filter_df.iterrows():
         location = [row['Latitude'], row['Longitude']]
         popup_content = (
             f"Postcode: {row['Postcode']}<br>"
@@ -61,8 +61,8 @@ def create_map(filtered_df):
     return m
 
 
-def show_map(filtered_df):
-    m = create_map(filtered_df)  # Create the map with the filtered data
+def show_map(filter_df):
+    m = create_map(filter_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
 
 
