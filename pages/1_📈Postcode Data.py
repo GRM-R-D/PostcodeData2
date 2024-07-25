@@ -3,14 +3,25 @@ import pandas as pd
 import folium
 from folium.plugins import MarkerCluster, Geocoder
 from streamlit_folium import folium_static
-from Home import add_logo
 
 # Set up the page configuration
 st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
 
-# Add logo to the app
-logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-master-logo-02.png"
-add_logo(logo_url, height=100)
+@st.cache_resource
+def add_logo(logo_url: str, width: int = 250, height: int = 300):
+    """Add a logo (from logo_url) on the top of the navigation page of a multipage app."""
+    logo_css = f"""
+        <style>
+            [data-testid="stSidebarNav"] {{
+                background-image: url({logo_url});
+                background-repeat: no-repeat;
+                background-size: {width}px {height}px; /* Set the size of the logo */
+                padding-top: {height + 20}px;
+                background-position: 20px 0px;
+            }}
+        </style>
+    """
+    st.markdown(logo_css, unsafe_allow_html=True)
 
 # Set the title and sidebar header
 st.markdown("# Postcode Data")
