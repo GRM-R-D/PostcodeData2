@@ -79,8 +79,8 @@ def show_map(filter_df):
     m = create_map(filter_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
 
-# Create a three-column layout
-col1, col2, col3 = st.columns([2, 2, 2])
+# Create a two-column layout
+col1, col2 = st.columns([2, 2])
 
 with col1:
     st.header("Map")
@@ -124,13 +124,11 @@ with col1:
     if selected_geology_code:
         filtered_df = filtered_df[filtered_df['GeologyCode'].astype(str) == selected_geology_code]
 
-    # Show the map with the filtered data
-    show_map(filtered_df)
-
-with col2:
     # Add a legend for the map
     legend_html = """
-    <div style="width: 130px; padding: 10px; border: 2px solid grey; background-color: white; font-size: 14px;">
+    <div style="position: relative; width: 160px; height: 120px; 
+                background-color: white; border:2px solid grey; font-size:14px;
+                padding: 10px;">
     <b>Plasticity Index</b><br>
     <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
     <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
@@ -138,9 +136,12 @@ with col2:
     <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ≥ 40<br>
     </div>
     """
-    components.html(legend_html, height=150)
+    st.markdown(legend_html, unsafe_allow_html=True)
 
-with col3:
+    # Show the map with the filtered data
+    show_map(filtered_df)
+
+with col2:
     st.header("Data")
 
     # Group checkboxes
