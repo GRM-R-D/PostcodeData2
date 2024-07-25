@@ -80,7 +80,7 @@ def show_map(filter_df):
     folium_static(m)  # Display the map
 
 # Create a three-column layout
-col1, col2, col3 = st.columns([2, 1, 2])
+col1, col2, col3 = st.columns([2, 2, 2])
 
 with col1:
     st.header("Map")
