@@ -131,12 +131,13 @@ with row1[2]:
 # Add a reset button below the filters
 with row1[0]:
     if st.button('Reset Filters'):
+        # Reset session state
         st.session_state.selected_project_id = ""
         st.session_state.selected_geology_code = ""
         st.session_state.plasticity_filter = (int(plasticity_rng[0]), int(plasticity_rng[1]))
 
-        # Update widgets to reflect the reset
-        st.session_state.plasticity_index = st.session_state.plasticity_filter
+        # Trigger a rerun to update widget values
+        st.experimental_rerun()
 
 # Apply filters based on selections
 filtered_df = df[(df['PlasticityIndex'] >= st.session_state.plasticity_filter[0]) &
