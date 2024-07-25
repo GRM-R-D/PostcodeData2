@@ -3,7 +3,6 @@ import pandas as pd
 import folium
 from folium.plugins import MarkerCluster, Geocoder
 from streamlit_folium import folium_static
-from branca.element import Template, MacroElement
 
 # Set up the page configuration
 st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
@@ -77,84 +76,7 @@ def create_map(filter_df):
 
     # Add Geocoder plugin
     Geocoder().add_to(m)
-
-    # Add a custom legend to the map
-    template = """
-        {% macro html(this, kwargs) %}
-        <html>
-        <head>
-          <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-          <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-          <style>
-            .maplegend {
-              position: absolute;
-              z-index: 9999;
-              border: 2px solid grey;
-              background-color: rgba(255, 255, 255, 0.8);
-              border-radius: 6px;
-              padding: 10px;
-              font-size: 14px;
-            }
-            .maplegend .legend-title {
-              text-align: left;
-              margin-bottom: 5px;
-              font-weight: bold;
-            }
-            .maplegend .legend-scale ul {
-              margin: 0;
-              padding: 0;
-              list-style: none;
-            }
-            .maplegend .legend-scale ul li {
-              font-size: 80%;
-              margin-bottom: 2px;
-            }
-            .maplegend ul.legend-labels li span {
-              display: block;
-              float: left;
-              height: 16px;
-              width: 30px;
-              margin-right: 5px;
-              border: 1px solid #999;
-            }
-          </style>
-          <script>
-            $( function() {
-              $( "#maplegend" ).draggable();
-            });
-          </script>
-        </head>
-        <body>
-          <div id='maplegend' class='maplegend' 
-              style='right: 20px; bottom: 20px;'>
-            <div class='legend-title'>Plasticity Index</div>
-            <div class='legend-scale'>
-              <ul class='legend-labels'>
-                <li><span style='background: green;'></span>Plasticity Index < 10</li>
-                <li><span style='background: yellow;'></span>10 ≤ Plasticity Index < 20</li>
-                <li><span style='background: orange;'></span>20 ≤ Plasticity Index < 40</li>
-                <li><span style='background: red;'></span>Plasticity Index ≥ 40</li>
-              </ul>
-            </div>
-          </div>
-        </body>
-        </html>
-        {% endmacro %}
-        """
-    macro = MacroElement()
-    macro._template = Template(template)
-    m.get_root().add_child(macro)
-
     return m
-
-
-def show_map(filter_df):
-    m = create_map(filter_df)  # Create the map with the filtered data
-    folium_static(m)  # Display the map with the legend
-
-
-# Call the show_map function with your filtered DataFrame
-# show_map(filtered_df)
 
 
 def show_map(filter_df):
@@ -177,16 +99,30 @@ with col1:
     filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
                      (df['PlasticityIndex'] <= plasticity_filter[1])]
 
+    # Store filtered options in session state
+    if 'filtered_options' not in st.session_state:
+        st.session_state.filtered_options = {
+            'project_ids': sorted(df['ProjectID'].astype(str).unique()),
+            'geology_codes': sorted(df['GeologyCode'].astype(str).unique())
+        }
+
     # Dropdown for Project ID
     project_ids = sorted(filtered_df['ProjectID'].astype(str).unique())
     selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids)
 
-    # Filter DataFrame based on selected Project ID
+    # Update geology codes based on selected Project ID
     if selected_project_id:
         filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == selected_project_id]
 
-    # Update Geology Code options based on the filtered DataFrame
-    geology_codes = sorted(filtered_df['GeologyCode'].astype(str).unique())
+    # Update session state with filtered geology codes
+    if selected_project_id:
+        geology_codes = sorted(filtered_df['GeologyCode'].astype(str).unique())
+        st.session_state.filtered_options['geology_codes'] = geology_codes
+    else:
+        st.session_state.filtered_options['geology_codes'] = sorted(df['GeologyCode'].astype(str).unique())
+
+    # Dropdown for Geology Code
+    geology_codes = st.session_state.filtered_options['geology_codes']
     selected_geology_code = st.selectbox("Select Geology Code", options=[""] + geology_codes)
 
     # Apply Geology Code filter
