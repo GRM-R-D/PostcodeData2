@@ -1,6 +1,6 @@
 streamlit~=1.36.0
 pandas~=1.5.3
 folium~=0.17.0
-pygwalker~=0.4.9.
+pygwalker~=0.4.9
 streamlit_extras
 streamlit_folium
