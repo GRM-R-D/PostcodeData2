@@ -8,6 +8,7 @@ import streamlit.components.v1 as components
 # Set up the page configuration
 st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
 
+
 @st.cache_resource
 def add_logo(logo_url: str, width: int = 250, height: int = 300):
     """Add a logo (from logo_url) on the top of the navigation page of a multipage app."""
@@ -24,6 +25,7 @@ def add_logo(logo_url: str, width: int = 250, height: int = 300):
     """
     st.markdown(logo_css, unsafe_allow_html=True)
 
+
 # URL of the logo image
 logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-master-logo-02.png"
 
@@ -34,12 +36,27 @@ add_logo(logo_url, height=100)
 st.markdown("# Postcode Data")
 st.write("This page shows a table of UK postcodes and their corresponding Atterberg Limits")
 
+# Add a paragraph to the sidebar
+st.sidebar.markdown("""
+    **Welcome to the Postcode Data Explorer!**
+
+    This application allows you to explore and analyze UK postcode data related to Atterberg Limits. 
+    You can filter data based on Plasticity Index, Project ID, and Geology Code. The interactive map 
+    displays locations with different color codes based on Plasticity Index values. Use the checkboxes 
+    to toggle the display of UTM and Latitude/Longitude coordinates in the data table.
+    
+    This application can be used to compare Volume Change Potential by locations and geologies, as well as 
+    relationships to other nearby projects
+
+""")
+
 # Read and preprocess the CSV data
 filename = 'Points.csv'  # replace with your actual CSV file path
 df = pd.read_csv(filename)
 
 # Determine the range for Plasticity Index slider
 plasticity_rng = (df['PlasticityIndex'].min(), df['PlasticityIndex'].max())
+
 
 def get_color(plasticity_index):
     if plasticity_index >= 40:
@@ -50,6 +67,7 @@ def get_color(plasticity_index):
         return 'yellow'
     else:
         return 'green'
+
 
 def create_map(filter_df):
     # Check if the filtered DataFrame is empty
@@ -79,9 +97,11 @@ def create_map(filter_df):
     Geocoder().add_to(m)
     return m
 
+
 def show_map(filtered_df):
     m = create_map(filtered_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
+
 
 # Define the layout using Streamlit's grid system
 row1 = st.columns([2, 1, 1])
@@ -116,7 +136,8 @@ with row1[2]:
         # Update Geology Code options based on selected Project ID
         if st.session_state.selected_project_id:
             geology_codes = sorted(
-                df[df['ProjectID'].astype(str) == st.session_state.selected_project_id]['GeologyCode'].astype(str).unique())
+                df[df['ProjectID'].astype(str) == st.session_state.selected_project_id]['GeologyCode'].astype(
+                    str).unique())
         else:
             geology_codes = sorted(df['GeologyCode'].astype(str).unique())
 
@@ -138,18 +159,13 @@ if st.session_state.selected_geology_code:
 
 # Row 2: Legend and Checkboxes
 with row2[0]:
-    legend_html = """
-        <div style="position: fixed; 
-                    bottom: 10px; left: 10px; width: 160px; height: 120px; 
-                    background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
-                    padding: 10px;">
-        <b>Plasticity Index</b><br>
-        <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
-        <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
-        <i style="background:orange; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 20 - 40<br>
-        <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ≥ 40<br>
-        </div>
-        """
+    legend_html = """<div style="position: fixed; bottom: 10px; left: 10px; width: 160px; height: 120px; 
+    background-color: white; border:2px solid grey; z-index:9999; font-size:14px; padding: 10px;"> <b>Plasticity 
+    Index</b><br> <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 
+    5px;"></i> < 10<br> <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 
+    5px;"></i> 10 - 20<br> <i style="background:orange; width: 20px; height: 20px; display: inline-block; 
+    margin-right: 5px;"></i> 20 - 40<br> <i style="background:red; width: 20px; height: 20px; display: inline-block; 
+    margin-right: 5px;"></i> ≥ 40<br> </div>"""
     components.html(legend_html, height=200)
 
 with row2[1]:
