@@ -93,13 +93,15 @@ if 'selected_project_id' not in st.session_state:
     st.session_state.selected_project_id = ""
 if 'selected_geology_code' not in st.session_state:
     st.session_state.selected_geology_code = ""
+if 'plasticity_filter' not in st.session_state:
+    st.session_state.plasticity_filter = (int(plasticity_rng[0]), int(plasticity_rng[1]))
 
 # Row 1: Filters and Searches
 with row1[0]:
     with st.expander("Plasticity Index Filter", expanded=True):
         plasticity_min, plasticity_max = plasticity_rng
         plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
-                                      value=(int(plasticity_min), int(plasticity_max)))
+                                      value=st.session_state.plasticity_filter, key="plasticity_index")
 
 with row1[1]:
     with st.expander("Project ID Search", expanded=True):
@@ -131,11 +133,14 @@ with row1[0]:
     if st.button('Reset Filters'):
         st.session_state.selected_project_id = ""
         st.session_state.selected_geology_code = ""
-        plasticity_filter = (int(plasticity_rng[0]), int(plasticity_rng[1]))
+        st.session_state.plasticity_filter = (int(plasticity_rng[0]), int(plasticity_rng[1]))
+
+        # Update widgets to reflect the reset
+        st.session_state.plasticity_index = st.session_state.plasticity_filter
 
 # Apply filters based on selections
-filtered_df = df[(df['PlasticityIndex'] >= plasticity_filter[0]) &
-                 (df['PlasticityIndex'] <= plasticity_filter[1])]
+filtered_df = df[(df['PlasticityIndex'] >= st.session_state.plasticity_filter[0]) &
+                 (df['PlasticityIndex'] <= st.session_state.plasticity_filter[1])]
 
 if st.session_state.selected_project_id:
     filtered_df = filtered_df[filtered_df['ProjectID'].astype(str) == st.session_state.selected_project_id]
