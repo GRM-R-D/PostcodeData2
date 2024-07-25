@@ -79,8 +79,8 @@ def show_map(filter_df):
     m = create_map(filter_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
 
-# Create a two-column layout
-col1, col2 = st.columns([2, 2])
+# Create a three-column layout
+col1, col2, col3 = st.columns([2, 1, 2])
 
 with col1:
     st.header("Map")
@@ -127,12 +127,11 @@ with col1:
     # Show the map with the filtered data
     show_map(filtered_df)
 
+with col2:
+    st.header("Legend")
     # Add a legend for the map
     legend_html = """
-    <div style="position: fixed; 
-                bottom: 10px; left: 10px; width: 160px; height: 120px; 
-                background-color: white; border:2px solid grey; z-index:9999; font-size:14px;
-                padding: 10px;">
+    <div style="width: 150px; padding: 10px; border: 2px solid grey; background-color: white; font-size: 14px;">
     <b>Plasticity Index</b><br>
     <i style="background:green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> < 10<br>
     <i style="background:yellow; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> 10 - 20<br>
@@ -140,9 +139,9 @@ with col1:
     <i style="background:red; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ≥ 40<br>
     </div>
     """
-    components.html(legend_html, height=200)
+    components.html(legend_html, height=150)
 
-with col2:
+with col3:
     st.header("Data")
 
     # Group checkboxes
