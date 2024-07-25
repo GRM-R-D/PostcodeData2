@@ -8,7 +8,6 @@ import streamlit.components.v1 as components
 # Set up the page configuration
 st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
 
-
 @st.cache_resource
 def add_logo(logo_url: str, width: int = 250, height: int = 300):
     """Add a logo (from logo_url) on the top of the navigation page of a multipage app."""
@@ -24,7 +23,6 @@ def add_logo(logo_url: str, width: int = 250, height: int = 300):
         </style>
     """
     st.markdown(logo_css, unsafe_allow_html=True)
-
 
 # URL of the logo image
 logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-master-logo-02.png"
@@ -43,7 +41,6 @@ df = pd.read_csv(filename)
 # Determine the range for Plasticity Index slider
 plasticity_rng = (df['PlasticityIndex'].min(), df['PlasticityIndex'].max())
 
-
 def get_color(plasticity_index):
     if plasticity_index >= 40:
         return 'red'
@@ -53,7 +50,6 @@ def get_color(plasticity_index):
         return 'yellow'
     else:
         return 'green'
-
 
 def create_map(filter_df):
     # Check if the filtered DataFrame is empty
@@ -83,32 +79,29 @@ def create_map(filter_df):
     Geocoder().add_to(m)
     return m
 
-
 def show_map(filtered_df):
     m = create_map(filtered_df)  # Create the map with the filtered data
     folium_static(m)  # Display the map
-
 
 # Initialize session state variables if not already present
 if 'selected_project_id' not in st.session_state:
     st.session_state.selected_project_id = ""
 if 'selected_geology_code' not in st.session_state:
     st.session_state.selected_geology_code = ""
-if 'filters_visible' not in st.session_state:
-    st.session_state.filters_visible = True
+if 'show_widgets' not in st.session_state:
+    st.session_state.show_widgets = True
 
-# Toggle button for filters
-if st.button('Toggle Filters'):
-    st.session_state.filters_visible = not st.session_state.filters_visible
+# Button to toggle widgets visibility
+if st.button("Toggle Widgets"):
+    st.session_state.show_widgets = not st.session_state.show_widgets
 
 # Define the layout using Streamlit's grid system
 row1 = st.columns([2, 1, 1])
 row2 = st.columns([1, 1])
 row3 = st.columns([2, 2])
 
-# Conditional display of filters
-if st.session_state.filters_visible:
-    # Row 1: Filters and Searches
+# Row 1: Filters and Searches
+if st.session_state.show_widgets:
     with row1[0]:
         plasticity_min, plasticity_max = plasticity_rng
         plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
