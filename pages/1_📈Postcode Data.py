@@ -61,6 +61,8 @@ def get_color(plasticity_index):
     elif 20 <= plasticity_index < 40:
         return 'orange'
     elif 10 <= plasticity_index < 20:
+        return 'beige'
+    else:
         return 'green'
 
 def create_map(filter_df):
