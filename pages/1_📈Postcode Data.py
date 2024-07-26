@@ -56,6 +56,7 @@ plasticity_rng = (df['PlasticityIndex'].min(), df['PlasticityIndex'].max())
 
 
 def get_color(plasticity_index):
+    print(f"Plasticity Index: {plasticity_index}")  # Debug statement
     if plasticity_index >= 40:
         return 'red'
     elif 20 <= plasticity_index < 40:
