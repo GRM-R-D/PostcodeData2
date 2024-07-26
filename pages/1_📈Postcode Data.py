@@ -56,7 +56,7 @@ plasticity_rng = (df['PlasticityIndex'].min(), df['PlasticityIndex'].max())
 
 
 def get_color(plasticity_index):
-    print(f"Plasticity Index: {plasticity_index}")  # Debug statement
+    st.write(f"Plasticity Index: {plasticity_index}")  # Logging statement
     if plasticity_index >= 40:
         return 'red'
     elif 20 <= plasticity_index < 40:
@@ -65,7 +65,6 @@ def get_color(plasticity_index):
         return 'yellow'
     else:
         return 'green'
-
 
 def create_map(filter_df):
     # Check if the filtered DataFrame is empty
