@@ -43,7 +43,7 @@ logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-m
 add_logo(logo_url, height=100)
 
 # Import your data
-df = pd.read_csv("Points.csv")
+df = pd.read_csv("Pointdate.csv")
 
 pyg_app = StreamlitRenderer(df)
 
