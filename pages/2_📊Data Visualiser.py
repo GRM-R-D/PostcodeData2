@@ -45,7 +45,7 @@ add_logo(logo_url, height=100)
 # Import your data
 df = pd.read_csv("Pointdate.csv")
 
-df['Date'] = pd.to_datetime(df['date'])
+df['Date'] = pd.to_datetime(df['Date'])
 df = df.sort_values(by='date')
 
 
