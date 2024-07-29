@@ -46,7 +46,7 @@ add_logo(logo_url, height=100)
 df = pd.read_csv("Pointdate.csv")
 
 df['Date'] = pd.to_datetime(df['Date'])
-df = df.sort_values(by='date')
+df = df.sort_values(by='Date')
 
 
 pyg_app = StreamlitRenderer(df)
