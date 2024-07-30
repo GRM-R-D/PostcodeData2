@@ -1,9 +1,26 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
+import altair as alt
 
-DataFrame = 'Pointdate.csv'
+# Load the CSV data
+data = pd.read_csv('data.csv')
 
-chart_data = pd.DataFrame(np.random.randn(20, 3), columns=["Date", "PlasticityIndex"])
+# Ensure 'Date' is a datetime column
+data['Date'] = pd.to_datetime(data['Date'])
 
-st.line_chart(chart_data)
+# Display the data (optional)
+st.write("Data from CSV:")
+st.write(data)
+
+# Create the line chart using Altair for more customization
+chart = alt.Chart(data).mark_line().encode(
+    x='Date:T',
+    y='PlasticityIndex:Q'
+).properties(
+    title='Plasticity Index Over Time',
+    width=700,
+    height=400
+)
+
+# Display the chart in Streamlit
+st.altair_chart(chart, use_container_width=True)
