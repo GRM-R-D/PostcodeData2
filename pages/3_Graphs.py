@@ -8,16 +8,19 @@ data = pd.read_csv('Pointdate.csv')
 # Ensure 'Date' is a datetime column
 data['Date'] = pd.to_datetime(data['Date'])
 
+# Calculate the mean Plasticity Index for each Date
+mean_data = data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
+
 # Display the data (optional)
 st.write("Data from CSV:")
-st.write(data)
+st.write(mean_data)
 
-# Create the line chart using Altair for more customization
-chart = alt.Chart(data).mark_line().encode(
+# Create the line chart using Altair with smooth interpolation for more customization
+chart = alt.Chart(mean_data).mark_line(interpolate='monotone').encode(
     x='Date:T',
     y='PlasticityIndex:Q'
 ).properties(
-    title='Plasticity Index Over Time',
+    title='Mean Plasticity Index Over Time',
     width=700,
     height=400
 )
