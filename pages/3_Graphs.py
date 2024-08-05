@@ -34,18 +34,18 @@ chartOptions = {
 }
 
 # Series data
-seriesLineChart = {
-    "chart": chartOptions,
-    "series": [
-        {
-            "type": 'Line',
-            "data": chart_data.to_dict(orient='records'),
-            "options": {}
-        }
-    ]
-}
+seriesLineChart = [{
+    "type": 'Line',
+    "data": chart_data.to_dict(orient='records'),
+    "options": {}
+}]
 
 # Render the chart with Streamlit
 st.subheader("Mean Plasticity Index Over Time for OADBY TILL MEMBER")
 
-renderLightweightCharts(seriesLineChart)
+renderLightweightCharts([
+    {
+        "chart": chartOptions,
+        "series": seriesLineChart
+    }
+], 'line')
