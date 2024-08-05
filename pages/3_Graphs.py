@@ -20,5 +20,8 @@ st.write(mean_data)
 # Prepare data for Streamlit's line_chart
 chart_data = mean_data.set_index('Date')
 
+# Display the chart title using st.title or st.header
+st.title('Mean Plasticity Index Over Time for OADBY TILL MEMBER')
+
 # Display the chart in Streamlit using Streamlit's built-in line_chart
-st.line_chart(chart_data, title='Mean Plasticity Index Over Time for OADBY TILL MEMBER')
+st.line_chart(chart_data)
