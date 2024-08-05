@@ -40,7 +40,7 @@ chart_options = {
         'nameGap': 50
     },
     'series': [{
-        'data': mean_data[['Date', 'PlasticityIndex']].values.tolist(),
+        'data': [[int(pd.Timestamp(d).timestamp() * 1000), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values],
         'type': 'line',
         'smooth': True,
         'areaStyle': {}
