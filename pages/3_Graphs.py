@@ -20,6 +20,32 @@ st.write(mean_data)
 
 # Prepare data for streamlit-lightweight-charts
 chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
+chart_data['time'] = chart_data['time'].astype(str)  # Convert datetime to string
 
-# Display the chart in Streamlit using streamlit-lightweight-charts
-st.line_chart(chart_data, x='time', y='value', title='Mean Plasticity Index Over Time for OADBY TILL MEMBER', width=700, height=400)
+# Chart options
+chartOptions = {
+    "layout": {
+        "textColor": 'black',
+        "background": {
+            "type": 'solid',
+            "color": 'white'
+        }
+    }
+}
+
+# Series data
+seriesLineChart = [{
+    "type": 'Line',
+    "data": chart_data.to_dict(orient='records'),
+    "options": {}
+}]
+
+# Render the chart with Streamlit
+st.subheader("Mean Plasticity Index Over Time for OADBY TILL MEMBER")
+
+renderLightweightCharts([
+    {
+        "chart": chartOptions,
+        "series": seriesLineChart
+    }
+], 'line')
