@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from streamlit_echarts import st_echarts
+import altair as alt
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -18,37 +18,15 @@ mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mea
 st.write("Filtered Data from CSV:")
 st.write(mean_data)
 
-# Create ECharts line chart specification
-chart_options = {
-    'title': {
-        'text': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
-        'left': 'center'
-    },
-    'tooltip': {
-        'trigger': 'axis'
-    },
-    'xAxis': {
-        'type': 'time',
-        'name': 'Date',
-        'nameLocation': 'middle',
-        'nameGap': 30
-    },
-    'yAxis': {
-        'type': 'value',
-        'name': 'Mean Plasticity Index',
-        'nameLocation': 'middle',
-        'nameGap': 50
-    },
-    'series': [{
-        'data': mean_data[['Date', 'PlasticityIndex']].values.tolist(),
-        'type': 'line',
-        'smooth': True,
-        'areaStyle': {}
-    }],
-    'dataZoom': [{
-        'type': 'inside'
-    }]
-}
+# Create the line chart using Altair with smooth interpolation for more customization
+chart = alt.Chart(mean_data).mark_line(interpolate='monotone').encode(
+    x='Date:T',
+    y='PlasticityIndex:Q'
+).properties(
+    title='Mean Plasticity Index Over Time for OADBY TILL MEMBER',
+    width=700,
+    height=400
+)
 
-# Display the ECharts chart in Streamlit
-st_echarts(options=chart_options, height='400px')
+# Display the chart in Streamlit
+st.altair_chart(chart, use_container_width=True)
