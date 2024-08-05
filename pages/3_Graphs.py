@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from streamlit_echarts import st_echarts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -18,37 +17,8 @@ mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mea
 st.write("Filtered Data from CSV:")
 st.write(mean_data)
 
-# Create ECharts line chart specification
-chart_options = {
-    'title': {
-        'text': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
-        'left': 'center'
-    },
-    'tooltip': {
-        'trigger': 'axis'
-    },
-    'xAxis': {
-        'type': 'time',
-        'name': 'Date',
-        'nameLocation': 'middle',
-        'nameGap': 30
-    },
-    'yAxis': {
-        'type': 'value',
-        'name': 'Mean Plasticity Index',
-        'nameLocation': 'middle',
-        'nameGap': 50
-    },
-    'series': [{
-        'data': mean_data[['Date', 'PlasticityIndex']].values.tolist(),
-        'type': 'line',
-        'smooth': True,
-        'areaStyle': {}
-    }],
-    'dataZoom': [{
-        'type': 'inside'
-    }]
-}
+# Prepare data for Streamlit's line_chart
+chart_data = mean_data.set_index('Date')
 
-# Display the ECharts chart in Streamlit
-st_echarts(options=chart_options, height='400px')
+# Display the chart in Streamlit using Streamlit's built-in line_chart
+st.line_chart(chart_data, title='Mean Plasticity Index Over Time for OADBY TILL MEMBER')
