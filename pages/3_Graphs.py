@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
+from streamlit_lightweight_charts import renderLightweightCharts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -18,15 +18,8 @@ mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mea
 st.write("Filtered Data from CSV:")
 st.write(mean_data)
 
-# Create the line chart using Altair with smooth interpolation for more customization
-chart = alt.Chart(mean_data).mark_line(interpolate='monotone').encode(
-    x='Date:T',
-    y='PlasticityIndex:Q'
-).properties(
-    title='Mean Plasticity Index Over Time for OADBY TILL MEMBER',
-    width=700,
-    height=400
-)
+# Prepare data for streamlit-lightweight-charts
+chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
 
-# Display the chart in Streamlit
-st.altair_chart(chart, use_container_width=True)
+# Display the chart in Streamlit using streamlit-lightweight-charts
+st.line_chart(chart_data, x='time', y='value', title='Mean Plasticity Index Over Time for OADBY TILL MEMBER', width=700, height=400)
