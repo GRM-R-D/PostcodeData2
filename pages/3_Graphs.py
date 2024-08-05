@@ -1,6 +1,28 @@
 import streamlit as st
+import pandas as pd
 from streamlit_lightweight_charts import renderLightweightCharts
 
+# Load the CSV data
+data = pd.read_csv('Pointdate.csv')
+
+# Ensure 'Date' is a datetime column
+data['Date'] = pd.to_datetime(data['Date'])
+
+# Filter data to include only rows with the specified geology
+filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
+
+# Calculate the mean Plasticity Index for each Date
+mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
+
+# Display the filtered data (optional)
+st.write("Filtered Data from CSV:")
+st.write(mean_data)
+
+# Prepare data for streamlit-lightweight-charts
+chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
+chart_data['time'] = chart_data['time'].astype(str)  # Convert datetime to string
+
+# Chart options
 chartOptions = {
     "layout": {
         "textColor": 'black',
@@ -11,24 +33,15 @@ chartOptions = {
     }
 }
 
+# Series data
 seriesLineChart = [{
     "type": 'Line',
-    "data": [
-        { "time": '2018-12-22', "value": 32.51 },
-        { "time": '2018-12-23', "value": 31.11 },
-        { "time": '2018-12-24', "value": 27.02 },
-        { "time": '2018-12-25', "value": 27.32 },
-        { "time": '2018-12-26', "value": 25.17 },
-        { "time": '2018-12-27', "value": 28.89 },
-        { "time": '2018-12-28', "value": 25.46 },
-        { "time": '2018-12-29', "value": 23.92 },
-        { "time": '2018-12-30', "value": 22.68 },
-        { "time": '2018-12-31', "value": 22.67 },
-    ],
+    "data": chart_data.to_dict(orient='records'),
     "options": {}
 }]
 
-st.subheader("Line Chart with Watermark")
+# Render the chart with Streamlit
+st.subheader("Mean Plasticity Index Over Time for OADBY TILL MEMBER")
 
 renderLightweightCharts([
     {
