@@ -30,15 +30,27 @@ chartOptions = {
             "type": 'solid',
             "color": 'white'
         }
+    },
+    "line": {
+        "smooth": True  # Ensure lines are smooth
     }
 }
 
 # Series data
-seriesLineChart = [{
-    "type": 'Line',
-    "data": chart_data.to_dict(orient='records'),
-    "options": {}
-}]
+seriesLineChart = {
+    "chart": chartOptions,
+    "series": [
+        {
+            "type": 'Line',
+            "data": chart_data.to_dict(orient='records'),
+            "options": {
+                "line": {
+                    "smooth": True  # Ensure smooth lines
+                }
+            }
+        }
+    ]
+}
 
 # Render the chart with Streamlit
 st.subheader("Mean Plasticity Index Over Time for OADBY TILL MEMBER")
