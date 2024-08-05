@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -17,11 +18,15 @@ mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mea
 st.write("Filtered Data from CSV:")
 st.write(mean_data)
 
-# Prepare data for Streamlit's line_chart
-chart_data = mean_data.set_index('Date')
+# Create the line chart using Altair with smooth interpolation for more customization
+chart = alt.Chart(mean_data).mark_line(interpolate='monotone').encode(
+    x='Date:T',
+    y='PlasticityIndex:Q'
+).properties(
+    title='Mean Plasticity Index Over Time for OADBY TILL MEMBER',
+    width=700,
+    height=400
+)
 
-# Display the chart title using st.title or st.header
-st.title('Mean Plasticity Index Over Time for OADBY TILL MEMBER')
-
-# Display the chart in Streamlit using Streamlit's built-in line_chart
-st.line_chart(chart_data)
+# Display the chart in Streamlit
+st.altair_chart(chart, use_container_width=True)
