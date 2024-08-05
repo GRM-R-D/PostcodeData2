@@ -22,5 +22,5 @@ chart = alt.Chart(data).mark_line().encode(
     height=400
 )
 
-# Display the chart in Streamlit
-st.altair_chart(chart, use_container_width=True)
+# Display the chart in Streamlit as a Vega-Lite chart
+st.vega_lite_chart(chart, use_container_width=True)
