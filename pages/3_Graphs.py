@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -12,15 +11,17 @@ data['Date'] = pd.to_datetime(data['Date'])
 st.write("Data from CSV:")
 st.write(data)
 
-# Create the line chart using Altair for more customization
-chart = alt.Chart(data).mark_line().encode(
-    x='Date:T',
-    y='PlasticityIndex:Q'
-).properties(
-    title='Plasticity Index Over Time',
-    width=700,
-    height=400
-)
+# Create the Vega-Lite chart specification
+chart_spec = {
+    'mark': 'line',
+    'encoding': {
+        'x': {'field': 'Date', 'type': 'temporal'},
+        'y': {'field': 'PlasticityIndex', 'type': 'quantitative'}
+    },
+    'title': 'Plasticity Index Over Time',
+    'width': 700,
+    'height': 400
+}
 
-# Display the chart in Streamlit as a Vega-Lite chart
-st.vega_lite_chart(chart, use_container_width=True)
+# Display the chart in Streamlit using st.vega_lite_chart
+st.vega_lite_chart(data, spec=chart_spec, use_container_width=True)
