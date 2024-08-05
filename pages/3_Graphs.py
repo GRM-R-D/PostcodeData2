@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from streamlit_echarts import st_echarts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -17,20 +18,37 @@ mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mea
 st.write("Filtered Data from CSV:")
 st.write(mean_data)
 
-# Create the Vega-Lite chart specification with smooth interpolation
-chart_spec = {
-    'mark': {
+# Create ECharts line chart specification
+chart_options = {
+    'title': {
+        'text': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
+        'left': 'center'
+    },
+    'tooltip': {
+        'trigger': 'axis'
+    },
+    'xAxis': {
+        'type': 'time',
+        'name': 'Date',
+        'nameLocation': 'middle',
+        'nameGap': 30
+    },
+    'yAxis': {
+        'type': 'value',
+        'name': 'Mean Plasticity Index',
+        'nameLocation': 'middle',
+        'nameGap': 50
+    },
+    'series': [{
+        'data': mean_data[['Date', 'PlasticityIndex']].values.tolist(),
         'type': 'line',
-        'interpolate': 'monotone'
-    },
-    'encoding': {
-        'x': {'field': 'Date', 'type': 'temporal', 'title': 'Date'},
-        'y': {'field': 'PlasticityIndex', 'type': 'quantitative', 'title': 'Mean Plasticity Index'}
-    },
-    'title': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
-    'width': 700,
-    'height': 400
+        'smooth': True,
+        'areaStyle': {}
+    }],
+    'dataZoom': [{
+        'type': 'inside'
+    }]
 }
 
-# Display the chart in Streamlit using st.vega_lite_chart
-st.vega_lite_chart(mean_data, spec=chart_spec, use_container_width=True)
+# Display the ECharts chart in Streamlit
+st_echarts(options=chart_options, height='400px')
