@@ -5,7 +5,7 @@ from streamlit_echarts import st_echarts
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
 
-# Ensure 'Date' is a datetime column
+# Ensure 'Date' is a datetime column (if you have date-related features)
 data['Date'] = pd.to_datetime(data['Date'])
 
 # Filter data to include only rows with the specified geology
@@ -16,7 +16,7 @@ count_data = filtered_data['PlasticityIndex'].value_counts().reset_index()
 count_data.columns = ['PlasticityIndex', 'Count']
 
 # Exclude Plasticity Index values with a count of 0 (though `value_counts` should not include zero counts)
-count_data = count_data[count_data['Count'] > 0.0]
+count_data = count_data[count_data['Count'] > 0]
 
 # Display the DataFrame
 st.write("Plasticity Index Count Data:")
@@ -26,7 +26,7 @@ st.write(count_data)
 x_data = count_data['PlasticityIndex'].astype(str).tolist()  # Use strings for x-axis labels
 y_data = count_data['Count'].tolist()
 
-# Echarts options
+# Echarts options for a line graph
 chart_options = {
     "title": {
         "text": "Plasticity Index vs. Count of Samples",
@@ -45,7 +45,7 @@ chart_options = {
     "series": [
         {
             "name": "Count of Samples",
-            "type": "bar",
+            "type": "line",  # Changed from 'bar' to 'line'
             "data": y_data
         }
     ]
