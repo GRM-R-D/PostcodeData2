@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
 from streamlit_lightweight_charts import renderLightweightCharts
 
 # Load the CSV data
@@ -15,19 +14,19 @@ filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 # Calculate the mean Plasticity Index for each Date
 mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
 
-# Z-Score Normalization
-scaler = MinMaxScaler()
-mean_data[['PlasticityIndex']] = scaler.fit_transform(mean_data[['PlasticityIndex']])
-
-# Display the normalized data (optional)
-st.write("Normalized Data from CSV:")
+# Display the filtered data (optional)
+st.write("Filtered Data from CSV:")
 st.write(mean_data)
 
 # Prepare data for streamlit-lightweight-charts
-chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
-chart_data['time'] = chart_data['time'].astype(str)  # Convert datetime to string
+# Convert dates to Unix timestamps
+mean_data['Date'] = mean_data['Date'].astype(int) // 10**9  # Convert to Unix timestamp in seconds
 
-# Chart options
+# Convert to dict format suitable for Lightweight Charts
+chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
+chart_data = chart_data.to_dict(orient='records')
+
+# Chart options with custom date formatting
 chartOptions = {
     "layout": {
         "textColor": 'black',
@@ -35,18 +34,24 @@ chartOptions = {
             "type": 'solid',
             "color": 'white'
         }
+    },
+    "xAxis": {
+        "labels": {
+            "formatter": "function(value) { return new Date(value * 1000).toLocaleDateString('en-GB'); }"  # Format timestamp to D-M-YYYY
+        }
     }
 }
 
 # Series data
 seriesLineChart = [{
-    "type": 'Line',
-    "data": chart_data.to_dict(orient='records'),
+    "name": "Plasticity Index",
+    "data": chart_data,
+    "type": 'line',
     "options": {}
 }]
 
 # Render the chart with Streamlit
-st.subheader("Mean Plasticity Index Over Time for OADBY TILL MEMBER (Normalized)")
+st.subheader("Mean Plasticity Index Over Time for OADBY TILL MEMBER")
 
 renderLightweightCharts([
     {
