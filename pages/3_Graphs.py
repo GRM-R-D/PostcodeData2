@@ -22,10 +22,10 @@ count_data = count_data[count_data['Count'] > 0]
 count_data = count_data.sort_values(by='PlasticityIndex')
 
 # Prepare data for Highcharts
-x_data = count_data['PlasticityIndex'].tolist()  # Numeric or categorical x-values
+x_data = count_data['PlasticityIndex'].tolist()  # Numeric x-values
 y_data = count_data['Count'].tolist()
 
-# Highcharts options for a spline graph
+# Highcharts options for a spline graph with numeric x-axis
 chart_options = {
     'chart': {
         'type': 'spline',
@@ -36,7 +36,7 @@ chart_options = {
         'align': 'center'
     },
     'xAxis': {
-        'type': 'linear',
+        'type': 'linear',  # Use 'linear' for numeric x-axis
         'title': {
             'text': 'Plasticity Index'
         }
@@ -48,7 +48,7 @@ chart_options = {
     },
     'series': [{
         'name': 'Count of Samples',
-        'data': y_data,
+        'data': list(zip(x_data, y_data)),  # Combine x and y data into tuples
         'lineWidth': 2,
         'color': '#FF5733',
         'marker': {
