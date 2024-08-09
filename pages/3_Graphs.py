@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from streamlit_echarts import st_echarts
+import streamlit_highcharts as hg
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -14,41 +14,48 @@ filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 # Calculate the mean Plasticity Index for each Date
 mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
 
-# Display the filtered data (optional)
-st.write("Filtered Data from CSV:")
-st.write(mean_data)
+# Prepare data for Highcharts
+chart_data = [[int(d.timestamp() * 1000), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values]
 
-# Create ECharts line chart specification
+# Create Highcharts line chart configuration
 chart_options = {
+    'chart': {
+        'type': 'line',
+        'zoomType': 'x',
+    },
     'title': {
         'text': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
-        'left': 'center'
-    },
-    'tooltip': {
-        'trigger': 'axis'
+        'align': 'center'
     },
     'xAxis': {
-        'type': 'time',
-        'name': 'Date',
-        'nameLocation': 'middle',
-        'nameGap': 30
+        'type': 'datetime',
+        'title': {
+            'text': 'Date'
+        }
     },
     'yAxis': {
-        'type': 'value',
-        'name': 'Mean Plasticity Index',
-        'nameLocation': 'middle',
-        'nameGap': 50
+        'title': {
+            'text': 'Mean Plasticity Index'
+        }
     },
     'series': [{
-        'data': [[int(pd.Timestamp(d).timestamp() * 1000), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values],
-        'type': 'line',
-        'smooth': True,
-        'areaStyle': {}
+        'name': 'Plasticity Index',
+        'data': chart_data,
+        'lineWidth': 2,
+        'color': '#FF5733',
+        'marker': {
+            'enabled': False
+        },
+        'fillOpacity': 0.3
     }],
-    'dataZoom': [{
-        'type': 'inside'
-    }]
+    'plotOptions': {
+        'line': {
+            'marker': {
+                'enabled': False
+            },
+        }
+    }
 }
 
-# Display the ECharts chart in Streamlit
-st_echarts(options=chart_options, height='400px')
+# Display the Highcharts chart in Streamlit
+hg.streamlit_highcharts(chart_options, height=400)
