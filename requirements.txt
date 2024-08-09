@@ -7,6 +7,7 @@ asttokens==2.4.1
 attrs==23.2.0
 backoff==2.2.1
 blinker==1.8.2
+bokeh==3.5.1
 branca==0.7.2
 cachetools==5.4.0
 certifi==2024.7.4
@@ -14,6 +15,7 @@ charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
 comm==0.2.2
+contourpy==1.2.1
 dateutils==0.6.12
 decorator==5.1.1
 duckdb==1.0.0
@@ -59,6 +61,7 @@ Pygments==2.18.0
 pygwalker==0.4.9.3
 python-dateutil==2.9.0.post0
 pytz==2024.1
+PyYAML==6.0.2
 quickjs==1.19.4
 referencing==0.35.1
 requests==2.32.3
