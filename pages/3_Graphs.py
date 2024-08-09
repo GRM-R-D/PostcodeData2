@@ -20,8 +20,8 @@ st.write("Count Data from CSV:")
 st.write(count_data)
 
 # Prepare data for streamlit-lightweight-charts
-chart_data = count_data[['PlasticityIndex', 'Count']].rename(columns={'PlasticityIndex': 'time', 'Count': 'value'})
-chart_data['time'] = chart_data['time'].astype(str)  # Convert Plasticity Index to string
+chart_data = count_data[['PlasticityIndex', 'Count']].rename(columns={'PlasticityIndex': 'value', 'Count': 'value'})
+chart_data['value'] = chart_data['value'].astype(str)  # Convert Plasticity Index to string
 
 # Chart options
 chartOptions = {
