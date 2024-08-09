@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from streamlit_echarts import st_echarts
+from streamlit_lightweight_charts import renderLightweightCharts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -18,37 +18,34 @@ mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mea
 st.write("Filtered Data from CSV:")
 st.write(mean_data)
 
-# Create ECharts line chart specification
-chart_options = {
-    'title': {
-        'text': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
-        'left': 'center'
-    },
-    'tooltip': {
-        'trigger': 'axis'
-    },
-    'xAxis': {
-        'type': 'time',
-        'name': 'Date',
-        'nameLocation': 'middle',
-        'nameGap': 30
-    },
-    'yAxis': {
-        'type': 'value',
-        'name': 'Mean Plasticity Index',
-        'nameLocation': 'middle',
-        'nameGap': 50
-    },
-    'series': [{
-        'data': [[int(pd.Timestamp(d).timestamp() * 1000), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values],
-        'type': 'line',
-        'smooth': True,
-        'areaStyle': {}
-    }],
-    'dataZoom': [{
-        'type': 'inside'
-    }]
+# Prepare data for streamlit-lightweight-charts
+chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
+chart_data['time'] = chart_data['time'].astype(str)  # Convert datetime to string
+
+# Chart options
+chartOptions = {
+    "layout": {
+        "textColor": 'black',
+        "background": {
+            "type": 'solid',
+            "color": 'white'
+        }
+    }
 }
 
-# Display the ECharts chart in Streamlit
-st_echarts(options=chart_options, height='400px')
+# Series data
+seriesLineChart = [{
+    "type": 'Line',
+    "data": chart_data.to_dict(orient='records'),
+    "options": {}
+}]
+
+# Render the chart with Streamlit
+st.subheader("Mean Plasticity Index Over Time for OADBY TILL MEMBER")
+
+renderLightweightCharts([
+    {
+        "chart": chartOptions,
+        "series": seriesLineChart
+    }
+], 'line')
