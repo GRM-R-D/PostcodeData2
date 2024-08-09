@@ -1,6 +1,6 @@
-import streamlit as st
 import pandas as pd
-import streamlit.components.v1 as components
+import streamlit as st
+from streamlit_highcharts import st_highcharts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -57,24 +57,6 @@ chart_options = {
     }]
 }
 
-# Create a Highcharts component
-highcharts_component = f"""
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Highcharts Example</title>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-</head>
-<body>
-    <div id="container" style="width: 100%; height: 400px;"></div>
-    <script>
-        Highcharts.chart('container', {chart_options});
-    </script>
-</body>
-</html>
-"""
-
-# Render the Highcharts component with Streamlit
+# Render the Highcharts chart with Streamlit
 st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
-components.html(highcharts_component, height=400)
+st_highcharts(chart_options)
