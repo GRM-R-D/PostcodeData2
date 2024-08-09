@@ -1,31 +1,32 @@
 import streamlit as st
 import pandas as pd
-import streamlit_gchart as gchart
+from streamlit_google_charts import google_chart
 
-# Load the CSV data
-data = pd.read_csv('Pointdate.csv')
+# Sample Data
+pop_data = [
+    ['City', '2010 Population', '2000 Population'],
+    ['New York City, NY', 8175000, 8008000],
+    ['Los Angeles, CA', 3792000, 3694000],
+    ['Chicago, IL', 2695000, 2896000],
+    ['Houston, TX', 2099000, 1953000],
+    ['Philadelphia, PA', 1526000, 1517000],
+]
 
-# Ensure 'Date' is a datetime column
-data['Date'] = pd.to_datetime(data['Date'])
-
-# Filter data to include only rows with the specified geology
-filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
-
-# Calculate the mean Plasticity Index for each Date
-mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
+# Streamlit app
+st.title('Google Charts with Streamlit')
+st.subheader("Bar Chart Demo")
 
 # Prepare data for Google Charts
-chart_data = [['Date', 'Mean Plasticity Index']] + [[d.strftime('%Y-%m-%d'), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values]
+chart_data = [['City', '2010 Population', '2000 Population']] + pop_data[1:]
 
-# Define the GChart options
+# Google Charts configuration
 chart_options = {
-    'title': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
-    'curveType': 'function',  # This adds the smoothing effect
-    'legend': {'position': 'bottom'},
-    'hAxis': {'title': 'Date'},
-    'vAxis': {'title': 'Mean Plasticity Index'},
-    'height': 400,
+    'title': 'Population of Largest U.S. Cities',
+    'hAxis': {'title': 'Total Population', 'minValue': 0},
+    'vAxis': {'title': 'City'},
+    'width': 500,
+    'height': 300,
 }
 
-# Display the chart using streamlit-gchart
-gchart.gchart(data=chart_data, options=chart_options)
+# Display the chart
+google_chart(data=chart_data, chartType='BarChart', options=chart_options)
