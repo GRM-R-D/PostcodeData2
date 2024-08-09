@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from streamlit_apexjs import st_apexcharts
+from streamlit_echarts import st_echarts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -18,35 +18,37 @@ mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mea
 st.write("Filtered Data from CSV:")
 st.write(mean_data)
 
-# Prepare data for ApexCharts
-dates = mean_data['Date'].dt.strftime('%Y-%m-%d').tolist()  # Convert to string format for labels
-plasticity_indices = mean_data['PlasticityIndex'].tolist()
-
-# Create ApexCharts line chart specification
-options = {
-    "chart": {
-        "type": "line",
-        "zoom": {"enabled": True}
+# Create ECharts line chart specification
+chart_options = {
+    'title': {
+        'text': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
+        'left': 'center'
     },
-    "title": {
-        "text": "Mean Plasticity Index Over Time for OADBY TILL MEMBER",
-        "align": "center"
+    'tooltip': {
+        'trigger': 'axis'
     },
-    "xaxis": {
-        "categories": dates,
-        "title": {"text": "Date"}
+    'xAxis': {
+        'type': 'time',
+        'name': 'Date',
+        'nameLocation': 'middle',
+        'nameGap': 30
     },
-    "yaxis": {
-        "title": {"text": "Mean Plasticity Index"}
+    'yAxis': {
+        'type': 'value',
+        'name': 'Mean Plasticity Index',
+        'nameLocation': 'middle',
+        'nameGap': 50
     },
-    "dataLabels": {"enabled": False},
-    "tooltip": {"enabled": True}
+    'series': [{
+        'data': [[int(pd.Timestamp(d).timestamp() * 1000), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values],
+        'type': 'line',
+        'smooth': True,
+        'areaStyle': {}
+    }],
+    'dataZoom': [{
+        'type': 'inside'
+    }]
 }
 
-# Display the ApexCharts chart in Streamlit
-st_apexcharts(
-    options=options,
-    series=[{"name": "Plasticity Index", "data": plasticity_indices}],
-    width='600px',
-    title='Mean Plasticity Index Over Time'
-)
+# Display the ECharts chart in Streamlit
+st_echarts(options=chart_options, height='400px')
