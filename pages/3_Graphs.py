@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import streamlit_highcharts as hg
+from streamlit_echarts import st_echarts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -14,48 +14,41 @@ filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 # Calculate the mean Plasticity Index for each Date
 mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
 
-# Prepare data for Highcharts
-chart_data = [[int(d.timestamp() * 1000), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values]
+# Display the filtered data (optional)
+st.write("Filtered Data from CSV:")
+st.write(mean_data)
 
-# Create Highcharts line chart configuration with curving
+# Create ECharts line chart specification
 chart_options = {
-    'chart': {
-        'type': 'spline',  # Changed from 'line' to 'spline' for curving
-        'zoomType': 'x',
-    },
     'title': {
         'text': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
-        'align': 'center'
+        'left': 'center'
+    },
+    'tooltip': {
+        'trigger': 'axis'
     },
     'xAxis': {
-        'type': 'datetime',
-        'title': {
-            'text': 'Date'
-        }
+        'type': 'time',
+        'name': 'Date',
+        'nameLocation': 'middle',
+        'nameGap': 30
     },
     'yAxis': {
-        'title': {
-            'text': 'Mean Plasticity Index'
-        }
+        'type': 'value',
+        'name': 'Mean Plasticity Index',
+        'nameLocation': 'middle',
+        'nameGap': 50
     },
     'series': [{
-        'name': 'Plasticity Index',
-        'data': chart_data,
-        'lineWidth': 2,
-        'color': '#FF5733',
-        'marker': {
-            'enabled': False
-        },
-        'fillOpacity': 0.3
+        'data': [[int(pd.Timestamp(d).timestamp() * 1000), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values],
+        'type': 'line',
+        'smooth': True,
+        'areaStyle': {}
     }],
-    'plotOptions': {
-        'spline': {  # Updated to 'spline' plot options
-            'marker': {
-                'enabled': False
-            },
-        }
-    }
+    'dataZoom': [{
+        'type': 'inside'
+    }]
 }
 
-# Display the Highcharts chart in Streamlit
-hg.streamlit_highcharts(chart_options, height=400)
+# Display the ECharts chart in Streamlit
+st_echarts(options=chart_options, height='400px')
