@@ -1,10 +1,17 @@
+import plotly.express as px
 import streamlit as st
-from bokeh.plotting import figure
 
-x = [1, 2, 3, 4, 5]
-y = [6, 7, 2, 4, 5]
+from streamlit_plotly_events import plotly_events
 
-p = figure(title="simple line example", x_axis_label="x", y_axis_label="y")
-p.line(x, y, legend_label="Trend", line_width=2)
+# Writes a component similar to st.write()
+fig = px.line(x=[1], y=[1])
+selected_points = plotly_events(fig)
 
-st.bokeh_chart(p, use_container_width=True)
+# Can write inside of things using with!
+with st.expander('Plot'):
+    fig = px.line(x=[1], y=[1])
+    selected_points = plotly_events(fig)
+
+# Select other Plotly events by specifying kwargs
+fig = px.line(x=[1], y=[1])
+selected_points = plotly_events(fig, click_event=False, hover_event=True)
