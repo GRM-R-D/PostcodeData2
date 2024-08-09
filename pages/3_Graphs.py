@@ -15,28 +15,44 @@ count_data = filtered_data.groupby('PlasticityIndex').size().reset_index(name='C
 st.write("Count Data:")
 st.write(count_data)
 
-# Prepare data for Lightweight Charts
+# Convert data to format suitable for Lightweight Charts
 chart_data = count_data.rename(columns={'PlasticityIndex': 'x', 'Count': 'y'})
-chart_data = chart_data.sort_values(by='x')
 
-# Convert data to a format suitable for lightweight-charts
-data_series = {
-    'series': [
-        {
-            'data': chart_data.to_dict('records'),
-            'name': 'Plasticity Index vs Count',
-            'type': 'line'
+# Chart options
+chartOptions = {
+    "layout": {
+        "textColor": 'black',
+        "background": {
+            "type": 'solid',
+            "color": 'white'
         }
-    ]
+    },
+    "xAxis": {
+        "title": "Plasticity Index",
+        "type": "linear"
+    },
+    "yAxis": {
+        "title": "Count",
+        "type": "linear"
+    }
 }
 
-# Create Lightweight Charts configuration
-chart_options = {
-    'title': 'Plasticity Index vs Count of OADBY TILL MEMBER',
-    'xAxis': {'title': 'Plasticity Index'},
-    'yAxis': {'title': 'Count'},
-    'data': data_series
-}
+# Series data
+seriesLineChart = [{
+    "type": 'Line',
+    "data": chart_data.to_dict(orient='records'),
+    "options": {
+        "color": 'blue',
+        "lineWidth": 2
+    }
+}]
 
-# Render the Lightweight Charts in Streamlit
-renderLightweightCharts(chart_options, height='400px')
+# Render the chart with Streamlit
+st.subheader("Plasticity Index vs Count of OADBY TILL MEMBER")
+
+renderLightweightCharts([
+    {
+        "chart": chartOptions,
+        "series": seriesLineChart
+    }
+], 'line')
