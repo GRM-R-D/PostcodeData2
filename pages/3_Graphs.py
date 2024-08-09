@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
+from streamlit_apexcharts import st_apexcharts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -14,19 +14,41 @@ filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 # Calculate the mean Plasticity Index for each Date
 mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
 
-# Display the filtered data (optional)
-st.write("Filtered Data from CSV:")
-st.write(mean_data)
+# Prepare data for ApexCharts
+chart_data = [{'x': d, 'y': pi} for d, pi in mean_data[['Date', 'PlasticityIndex']].values]
 
-# Create the line chart using Altair with smooth interpolation for more customization
-chart = alt.Chart(mean_data).mark_line(interpolate='monotone').encode(
-    x='Date:T',
-    y='PlasticityIndex:Q'
-).properties(
-    title='Mean Plasticity Index Over Time for OADBY TILL MEMBER',
-    width=700,
-    height=400
-)
+# Create ApexCharts line chart configuration with curving
+chart_options = {
+    'chart': {
+        'type': 'line',
+        'zoom': {
+            'enabled': True
+        }
+    },
+    'title': {
+        'text': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
+        'align': 'center'
+    },
+    'xaxis': {
+        'type': 'datetime',
+        'title': {
+            'text': 'Date'
+        }
+    },
+    'yaxis': {
+        'title': {
+            'text': 'Mean Plasticity Index'
+        }
+    },
+    'series': [{
+        'name': 'Plasticity Index',
+        'data': chart_data,
+        'color': '#FF5733',
+        'lineWidth': 2,
+        'fillOpacity': 0.3,
+        'smooth': True  # Smoothing the line
+    }]
+}
 
-# Display the chart in Streamlit
-st.altair_chart(chart, use_container_width=True)
+# Display the ApexCharts chart in Streamlit
+st_apexcharts(options=chart_options, height=400)
