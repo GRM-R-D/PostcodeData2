@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from streamlit_lightweight_charts import line_chart
+from streamlit_lightweight_charts import renderLightweightCharts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -15,17 +15,28 @@ count_data = filtered_data.groupby('PlasticityIndex').size().reset_index(name='C
 st.write("Count Data:")
 st.write(count_data)
 
-# Convert data to format suitable for Lightweight Charts
+# Prepare data for Lightweight Charts
 chart_data = count_data.rename(columns={'PlasticityIndex': 'x', 'Count': 'y'})
+chart_data = chart_data.sort_values(by='x')
 
-# Create Lightweight Charts line chart
-line_chart(
-    chart_data,
-    x='x',
-    y='y',
-    title='Plasticity Index vs Count of OADBY TILL MEMBER',
-    line_color='blue',
-    line_width=2,
-    x_axis_label='Plasticity Index',
-    y_axis_label='Count'
-)
+# Convert data to a format suitable for lightweight-charts
+data_series = {
+    'series': [
+        {
+            'data': chart_data.to_dict('records'),
+            'name': 'Plasticity Index vs Count',
+            'type': 'line'
+        }
+    ]
+}
+
+# Create Lightweight Charts configuration
+chart_options = {
+    'title': 'Plasticity Index vs Count of OADBY TILL MEMBER',
+    'xAxis': {'title': 'Plasticity Index'},
+    'yAxis': {'title': 'Count'},
+    'data': data_series
+}
+
+# Render the Lightweight Charts in Streamlit
+renderLightweightCharts(chart_options, height='400px')
