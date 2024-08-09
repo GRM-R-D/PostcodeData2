@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from streamlit_echarts import st_echarts
+from streamlit_lightweight_charts import line_chart
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -15,37 +15,17 @@ count_data = filtered_data.groupby('PlasticityIndex').size().reset_index(name='C
 st.write("Count Data:")
 st.write(count_data)
 
-# Create ECharts line chart specification
-chart_options = {
-    'title': {
-        'text': 'Plasticity Index vs Count of OADBY TILL MEMBER',
-        'left': 'center'
-    },
-    'tooltip': {
-        'trigger': 'axis'
-    },
-    'xAxis': {
-        'type': 'value',
-        'name': 'Plasticity Index',
-        'nameLocation': 'middle',
-        'nameGap': 30
-    },
-    'yAxis': {
-        'type': 'value',
-        'name': 'Count',
-        'nameLocation': 'middle',
-        'nameGap': 50
-    },
-    'series': [{
-        'data': count_data[['PlasticityIndex', 'Count']].values.tolist(),
-        'type': 'line',
-        'smooth': True,
-        'areaStyle': {}
-    }],
-    'dataZoom': [{
-        'type': 'inside'
-    }]
-}
+# Convert data to format suitable for Lightweight Charts
+chart_data = count_data.rename(columns={'PlasticityIndex': 'x', 'Count': 'y'})
 
-# Display the ECharts chart in Streamlit
-st_echarts(options=chart_options, height='400px')
+# Create Lightweight Charts line chart
+line_chart(
+    chart_data,
+    x='x',
+    y='y',
+    title='Plasticity Index vs Count of OADBY TILL MEMBER',
+    line_color='blue',
+    line_width=2,
+    x_axis_label='Plasticity Index',
+    y_axis_label='Count'
+)
