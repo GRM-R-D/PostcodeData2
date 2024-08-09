@@ -59,5 +59,4 @@ chart_options = {
 
 # Render the chart with Streamlit
 st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
-
-hg.highcharts(options=chart_options)
+hg.Highcharts(options=chart_options)  # Note: Ensure this function exists and is correctly used
