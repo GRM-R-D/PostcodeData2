@@ -15,7 +15,7 @@ filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 count_data = filtered_data['PlasticityIndex'].value_counts().reset_index()
 count_data.columns = ['PlasticityIndex', 'Count']
 
-# Display the filtered data (optional)
+# Display the DataFrame
 st.write("Plasticity Index Count Data:")
 st.write(count_data)
 
