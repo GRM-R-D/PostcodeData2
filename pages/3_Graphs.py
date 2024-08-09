@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from streamlit_lightweight_charts import renderLightweightCharts
+from streamlit_echarts import st_echarts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -19,41 +19,36 @@ count_data.columns = ['PlasticityIndex', 'Count']
 st.write("Plasticity Index Count Data:")
 st.write(count_data)
 
-# Prepare data for streamlit-lightweight-charts
-# Convert to dict format suitable for Lightweight Charts
-chart_data = count_data[['PlasticityIndex', 'Count']].rename(columns={'PlasticityIndex': 'time', 'Count': 'value'})
-chart_data = chart_data.to_dict(orient='records')
+# Prepare data for echarts
+x_data = count_data['PlasticityIndex'].astype(str).tolist()  # Use strings for x-axis labels
+y_data = count_data['Count'].tolist()
 
-# Chart options with custom date formatting
-chartOptions = {
-    "layout": {
-        "textColor": 'black',
-        "background": {
-            "type": 'solid',
-            "color": 'white'
-        }
+# Echarts options
+chart_options = {
+    "title": {
+        "text": "Plasticity Index vs. Count of Samples",
+        "subtext": "For OADBY TILL MEMBER"
+    },
+    "tooltip": {
+        "trigger": "axis"
     },
     "xAxis": {
-        "labels": {
-            "formatter": "function(value) { return value; }"  # Show Plasticity Index values directly
+        "type": "category",
+        "data": x_data
+    },
+    "yAxis": {
+        "type": "value"
+    },
+    "series": [
+        {
+            "name": "Count of Samples",
+            "type": "bar",
+            "data": y_data
         }
-    }
+    ]
 }
-
-# Series data
-seriesLineChart = [{
-    "name": "Count of Samples",
-    "data": chart_data,
-    "type": 'bar',  # Using 'bar' for count of samples
-    "options": {}
-}]
 
 # Render the chart with Streamlit
 st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
 
-renderLightweightCharts([
-    {
-        "chart": chartOptions,
-        "series": seriesLineChart
-    }
-], 'bar')  # Using 'bar' to visualize counts
+st_echarts(options=chart_options)
