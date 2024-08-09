@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import streamlit_highcharts as hg
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -20,13 +21,50 @@ count_data = count_data[count_data['Count'] > 0]
 # Sort by Plasticity Index value
 count_data = count_data.sort_values(by='PlasticityIndex')
 
-# Display the DataFrame
-st.write("Plasticity Index Count Data:")
-st.write(count_data)
+# Prepare data for Highcharts
+x_data = count_data['PlasticityIndex'].tolist()  # Numeric or categorical x-values
+y_data = count_data['Count'].tolist()
 
-# Prepare data for line chart
-chart_data = count_data.set_index('PlasticityIndex')['Count']
+# Highcharts options for a spline graph
+chart_options = {
+    'chart': {
+        'type': 'spline',
+        'zoomType': 'x',
+    },
+    'title': {
+        'text': 'Plasticity Index vs. Count of Samples for OADBY TILL MEMBER',
+        'align': 'center'
+    },
+    'xAxis': {
+        'categories': x_data,  # Use categories for non-date x-axis
+        'title': {
+            'text': 'Plasticity Index'
+        }
+    },
+    'yAxis': {
+        'title': {
+            'text': 'Count of Samples'
+        }
+    },
+    'series': [{
+        'name': 'Count of Samples',
+        'data': y_data,
+        'lineWidth': 2,
+        'color': '#FF5733',
+        'marker': {
+            'enabled': False
+        },
+        'fillOpacity': 0.3
+    }],
+    'plotOptions': {
+        'spline': {
+            'marker': {
+                'enabled': False
+            },
+        }
+    }
+}
 
 # Render the chart with Streamlit
 st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
-st.line_chart(chart_data)
+hg.Highcharts(options=chart_options)
