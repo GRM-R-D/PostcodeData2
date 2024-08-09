@@ -1,6 +1,5 @@
-import streamlit as st
 import pandas as pd
-from streamlit_lightweight_charts import renderLightweightCharts
+import streamlit_highcharts as hg
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -14,48 +13,48 @@ filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 # Calculate the mean Plasticity Index for each Date
 mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
 
-# Display the filtered data (optional)
-st.write("Filtered Data from CSV:")
-st.write(mean_data)
+# Prepare data for Highcharts
+chart_data = [[int(d.timestamp() * 1000), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values]
 
-# Prepare data for streamlit-lightweight-charts
-# Convert dates to Unix timestamps
-mean_data['Date'] = mean_data['Date'].astype(int) // 10**9  # Convert to Unix timestamp in seconds
-
-# Convert to dict format suitable for Lightweight Charts
-chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
-chart_data['time'] = chart_data['time'].astype(str)  # Convert datetime to string
-
-# Chart options with custom date formatting
-chartOptions = {
-    "layout": {
-        "textColor": 'black',
-        "background": {
-            "type": 'solid',
-            "color": 'white'
+# Create Highcharts line chart configuration with curving
+chart_options = {
+    'chart': {
+        'type': 'spline',  # Changed from 'line' to 'spline' for curving
+        'zoomType': 'x',
+    },
+    'title': {
+        'text': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
+        'align': 'center'
+    },
+    'xAxis': {
+        'type': 'datetime',
+        'title': {
+            'text': 'Date'
         }
     },
-    "xAxis": {
-        "labels": {
-            "formatter": "function(value) { return new Date(value * 1000).toLocaleDateString('en-GB'); }"  # Format timestamp to D-M-YYYY
+    'yAxis': {
+        'title': {
+            'text': 'Mean Plasticity Index'
+        }
+    },
+    'series': [{
+        'name': 'Plasticity Index',
+        'data': chart_data,
+        'lineWidth': 2,
+        'color': '#FF5733',
+        'marker': {
+            'enabled': False
+        },
+        'fillOpacity': 0.3
+    }],
+    'plotOptions': {
+        'spline': {  # Updated to 'spline' plot options
+            'marker': {
+                'enabled': False
+            },
         }
     }
 }
 
-# Series data
-seriesLineChart = [{
-    "name": "Plasticity Index",
-    "data": chart_data,
-    "type": 'line',
-    "options": {}
-}]
-
-# Render the chart with Streamlit
-st.subheader("Mean Plasticity Index Over Time for OADBY TILL MEMBER")
-
-renderLightweightCharts([
-    {
-        "chart": chartOptions,
-        "series": seriesLineChart
-    }
-], 'line')
+# Display the Highcharts chart in Streamlit
+hg.streamlit_highcharts(chart_options, height=400)
