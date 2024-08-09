@@ -17,10 +17,10 @@ mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mea
 # Prepare data for Highcharts
 chart_data = [[int(d.timestamp() * 1000), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values]
 
-# Create Highcharts line chart configuration
+# Create Highcharts line chart configuration with curving
 chart_options = {
     'chart': {
-        'type': 'line',
+        'type': 'spline',  # Changed from 'line' to 'spline' for curving
         'zoomType': 'x',
     },
     'title': {
@@ -49,7 +49,7 @@ chart_options = {
         'fillOpacity': 0.3
     }],
     'plotOptions': {
-        'line': {
+        'spline': {  # Updated to 'spline' plot options
             'marker': {
                 'enabled': False
             },
