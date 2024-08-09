@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 from streamlit_lightweight_charts import renderLightweightCharts
 
 # Load the CSV data
@@ -16,7 +16,7 @@ filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
 
 # Z-Score Normalization
-scaler = StandardScaler()
+scaler = MinMaxScaler()
 mean_data[['PlasticityIndex']] = scaler.fit_transform(mean_data[['PlasticityIndex']])
 
 # Display the normalized data (optional)
