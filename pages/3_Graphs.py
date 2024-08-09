@@ -36,7 +36,7 @@ chart_options = {
         'align': 'center'
     },
     'xAxis': {
-        'categories': x_data,  # Use categories for non-date x-axis
+        'type': 'linear',
         'title': {
             'text': 'Plasticity Index'
         }
