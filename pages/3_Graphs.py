@@ -18,6 +18,9 @@ count_data.columns = ['PlasticityIndex', 'Count']
 # Exclude Plasticity Index values with a count of 0 (though `value_counts` should not include zero counts)
 count_data = count_data[count_data['Count'] > 0]
 
+# Exclude Plasticity Index values that are 0
+count_data = count_data[count_data['PlasticityIndex'] != 0]
+
 # Sort by Plasticity Index value
 count_data = count_data.sort_values(by='PlasticityIndex')
 
