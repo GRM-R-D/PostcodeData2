@@ -25,19 +25,19 @@ count_data = count_data.sort_values(by='PlasticityIndex')
 st.write("Plasticity Index Count Data:")
 st.write(count_data)
 
-# Prepare the Plotly Express line chart
-fig = px.line(count_data, x='PlasticityIndex', y='Count',
-              title='Plasticity Index vs. Count of Samples',
-              labels={'PlasticityIndex': 'Plasticity Index', 'Count': 'Count of Samples'})
+# Prepare the Plotly Express line chart with Count on x-axis and PlasticityIndex on y-axis
+fig = px.line(count_data, x='Count', y='PlasticityIndex',
+              title='Count of Samples vs. Plasticity Index',
+              labels={'Count': 'Count of Samples', 'PlasticityIndex': 'Plasticity Index'})
 
 # Customize the chart
 fig.update_layout(
-    xaxis_title='Plasticity Index',
-    yaxis_title='Count of Samples',
-    title=dict(text='Plasticity Index vs. Count of Samples', x=0.5),
-    xaxis=dict(tickmode='linear')
+    xaxis_title='Count of Samples',
+    yaxis_title='Plasticity Index',
+    title=dict(text='Count of Samples vs. Plasticity Index', x=0.5),
+    yaxis=dict(tickmode='linear')  # Ensure y-axis shows linear scale
 )
 
 # Render the chart with Streamlit
-st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
+st.subheader("Count of Samples vs. Plasticity Index for OADBY TILL MEMBER")
 st.plotly_chart(fig, use_container_width=True)
