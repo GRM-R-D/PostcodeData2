@@ -1,32 +1,32 @@
 import streamlit as st
 import pandas as pd
-from streamlit_google_charts import google_chart
+import altair as alt
 
-# Sample Data
-pop_data = [
-    ['City', '2010 Population', '2000 Population'],
-    ['New York City, NY', 8175000, 8008000],
-    ['Los Angeles, CA', 3792000, 3694000],
-    ['Chicago, IL', 2695000, 2896000],
-    ['Houston, TX', 2099000, 1953000],
-    ['Philadelphia, PA', 1526000, 1517000],
-]
+# Load the CSV data
+data = pd.read_csv('Pointdate.csv')
 
-# Streamlit app
-st.title('Google Charts with Streamlit')
-st.subheader("Bar Chart Demo")
+# Ensure 'Date' is a datetime column
+data['Date'] = pd.to_datetime(data['Date'])
 
-# Prepare data for Google Charts
-chart_data = [['City', '2010 Population', '2000 Population']] + pop_data[1:]
+# Filter data to include only rows with the specified geology
+filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 
-# Google Charts configuration
-chart_options = {
-    'title': 'Population of Largest U.S. Cities',
-    'hAxis': {'title': 'Total Population', 'minValue': 0},
-    'vAxis': {'title': 'City'},
-    'width': 500,
-    'height': 300,
-}
+# Calculate the mean Plasticity Index for each Date
+mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
 
-# Display the chart
-google_chart(data=chart_data, chartType='BarChart', options=chart_options)
+# Display the filtered data (optional)
+st.write("Filtered Data from CSV:")
+st.write(mean_data)
+
+# Create the line chart using Altair with smooth interpolation for more customization
+chart = alt.Chart(mean_data).mark_line(interpolate='monotone').encode(
+    x='Date:T',
+    y='PlasticityIndex:Q'
+).properties(
+    title='Mean Plasticity Index Over Time for OADBY TILL MEMBER',
+    width=700,
+    height=400
+)
+
+# Display the chart in Streamlit
+st.altair_chart(chart, use_container_width=True)
