@@ -5,49 +5,48 @@ from streamlit_lightweight_charts import renderLightweightCharts
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
 
+# Ensure 'Date' is a datetime column
+data['Date'] = pd.to_datetime(data['Date'])
+
 # Filter data to include only rows with the specified geology
 filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 
-# Count the occurrences of 'OADBY TILL MEMBER' for each Plasticity Index value
-count_data = filtered_data.groupby('PlasticityIndex').size().reset_index(name='Count')
+# Count occurrences of each Plasticity Index value
+count_data = filtered_data['PlasticityIndex'].value_counts().reset_index()
+count_data.columns = ['PlasticityIndex', 'Count']
 
 # Display the filtered data (optional)
-st.write("Count Data:")
+st.write("Count Data from CSV:")
 st.write(count_data)
 
-# Convert data to format suitable for Lightweight Charts
-chart_data = count_data.rename(columns={'PlasticityIndex': 'x', 'Count': 'y'})
+# Prepare data for streamlit-lightweight-charts
+chart_data = count_data[['PlasticityIndex', 'Count']].rename(columns={'PlasticityIndex': 'time', 'Count': 'value'})
+chart_data['time'] = chart_data['time'].astype(str)  # Convert Plasticity Index to string
 
-# Prepare chart options and series data
-chart_options = {
+# Chart options
+chartOptions = {
     "layout": {
         "textColor": 'black',
         "background": {
             "type": 'solid',
             "color": 'white'
         }
-    },
-    "xAxis": {
-        "title": "Plasticity Index"
-    },
-    "yAxis": {
-        "title": "Count"
     }
 }
 
-series_line_chart = {
+# Series data
+seriesLineChart = [{
     "type": 'Line',
     "data": chart_data.to_dict(orient='records'),
-    "options": {
-        "color": 'blue',
-        "lineWidth": 2
+    "options": {}
+}]
+
+# Render the chart with Streamlit
+st.subheader("Count of Plasticity Index Values for OADBY TILL MEMBER")
+
+renderLightweightCharts([
+    {
+        "chart": chartOptions,
+        "series": seriesLineChart
     }
-}
-
-# Render the chart
-st.subheader("Plasticity Index vs Count of OADBY TILL MEMBER")
-
-renderLightweightCharts({
-    "chart": chart_options,
-    "series": [series_line_chart]
-})
+], 'line')
