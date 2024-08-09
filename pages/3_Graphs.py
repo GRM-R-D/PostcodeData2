@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from streamlit_echarts import st_echarts
+import streamlit.components.v1 as components
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -25,36 +25,56 @@ count_data = count_data.sort_values(by='PlasticityIndex')
 st.write("Plasticity Index Count Data:")
 st.write(count_data)
 
-# Prepare data for echarts
+# Prepare data for Highcharts
 x_data = count_data['PlasticityIndex'].astype(str).tolist()  # Use strings for x-axis labels
 y_data = count_data['Count'].tolist()
 
-# Echarts options for a line graph
+# Highcharts options for a line graph
 chart_options = {
     "title": {
         "text": "Plasticity Index vs. Count of Samples",
         "subtext": "For OADBY TILL MEMBER"
     },
     "tooltip": {
-        "trigger": "axis"
+        "shared": True,
+        "crosshairs": True
     },
     "xAxis": {
-        "type": "category",
-        "data": x_data
+        "categories": x_data,
+        "title": {
+            "text": "Plasticity Index"
+        }
     },
     "yAxis": {
-        "type": "value"
-    },
-    "series": [
-        {
-            "name": "Count of Samples",
-            "type": "line",  # Line chart type
-            "data": y_data
+        "title": {
+            "text": "Count of Samples"
         }
-    ]
+    },
+    "series": [{
+        "name": "Count of Samples",
+        "data": y_data,
+        "type": "line"  # Line chart type
+    }]
 }
 
-# Render the chart with Streamlit
-st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
+# Create a Highcharts component
+highcharts_component = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Highcharts Example</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 400px;"></div>
+    <script>
+        Highcharts.chart('container', {chart_options});
+    </script>
+</body>
+</html>
+"""
 
-st_echarts(options=chart_options)
+# Render the Highcharts component with Streamlit
+st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
+components.html(highcharts_component, height=400)
