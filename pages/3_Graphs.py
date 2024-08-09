@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 from bokeh.plotting import figure
+from bokeh.io import show
 from bokeh.models import ColumnDataSource
-from bokeh.palettes import Category10
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -37,7 +37,8 @@ p = figure(title="Plasticity Index vs. Count of Samples",
            y_axis_label='Count',
            x_range=x_data,  # Use x_data for categorical x-axis
            plot_height=400,
-           plot_width=700)
+           plot_width=700,
+           tools="")
 
 # Add a line renderer with legend and line thickness
 p.line(x_data, y_data, legend_label="Count of Samples", line_width=2, color='blue')
