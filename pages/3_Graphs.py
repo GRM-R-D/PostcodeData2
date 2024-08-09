@@ -1,58 +1,60 @@
 import streamlit as st
 import pandas as pd
-from streamlit_lightweight_charts import renderLightweightCharts
+from streamlit_echarts import st_echarts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
 
+# Ensure 'Date' is a datetime column (if you have date-related features)
+data['Date'] = pd.to_datetime(data['Date'])
+
 # Filter data to include only rows with the specified geology
 filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 
-# Count occurrences of each Plasticity Index value
+# Count the number of samples for each Plasticity Index value
 count_data = filtered_data['PlasticityIndex'].value_counts().reset_index()
 count_data.columns = ['PlasticityIndex', 'Count']
 
-# Display the filtered data (optional)
-st.write("Count Data from CSV:")
+# Exclude Plasticity Index values with a count of 0 (though `value_counts` should not include zero counts)
+count_data = count_data[count_data['Count'] > 0]
+
+# Sort by Plasticity Index value
+count_data = count_data.sort_values(by='PlasticityIndex')
+
+# Display the DataFrame
+st.write("Plasticity Index Count Data:")
 st.write(count_data)
 
-# Prepare data for Lightweight Charts
-# Convert Plasticity Index to string for proper display
-chart_data = count_data.rename(columns={'PlasticityIndex': 'x', 'Count': 'y'})
-chart_data['x'] = chart_data['x'].astype(str)  # Convert to string if needed
+# Prepare data for echarts
+x_data = count_data['PlasticityIndex'].astype(str).tolist()  # Use strings for x-axis labels
+y_data = count_data['Count'].tolist()
 
-# Chart options
-chartOptions = {
-    "layout": {
-        "textColor": 'black',
-        "background": {
-            "type": 'solid',
-            "color": 'white'
-        }
+# Echarts options for a line graph
+chart_options = {
+    "title": {
+        "text": "Plasticity Index vs. Count of Samples",
+        "subtext": "For OADBY TILL MEMBER"
+    },
+    "tooltip": {
+        "trigger": "axis"
     },
     "xAxis": {
-        "title": "Plasticity Index",
-        "type": "category"  # Category type if x-axis is categorical
+        "type": "category",
+        "data": x_data
     },
     "yAxis": {
-        "title": "Count"
-    }
+        "type": "value"
+    },
+    "series": [
+        {
+            "name": "Count of Samples",
+            "type": "line",  # Line chart type
+            "data": y_data
+        }
+    ]
 }
 
-# Series data
-seriesLineChart = [{
-    "type": 'Line',
-    "data": chart_data.to_dict(orient='records'),
-    "options": {
-        "color": 'blue',
-        "lineWidth": 2
-    }
-}]
-
 # Render the chart with Streamlit
-st.subheader("Count of Plasticity Index Values for OADBY TILL MEMBER")
+st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
 
-renderLightweightCharts({
-    "chart": chartOptions,
-    "series": seriesLineChart
-})
+st_echarts(options=chart_options)
