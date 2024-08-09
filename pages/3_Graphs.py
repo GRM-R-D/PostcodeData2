@@ -12,6 +12,7 @@ data['Date'] = pd.to_datetime(data['Date'])
 filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 
 # Count the number of samples for each Plasticity Index value
+# The 'value_counts' method will count the occurrences of each unique PlasticityIndex
 count_data = filtered_data['PlasticityIndex'].value_counts().reset_index()
 count_data.columns = ['PlasticityIndex', 'Count']
 
