@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import streamlit_highcharts as hg
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -25,38 +24,9 @@ count_data = count_data.sort_values(by='PlasticityIndex')
 st.write("Plasticity Index Count Data:")
 st.write(count_data)
 
-# Prepare data for Highcharts
-x_data = count_data['PlasticityIndex'].astype(str).tolist()  # Use strings for x-axis labels
-y_data = count_data['Count'].tolist()
-
-# Highcharts options for a line graph
-chart_options = {
-    "chart": {
-        "type": "line"
-    },
-    "title": {
-        "text": "Plasticity Index vs. Count of Samples",
-        "subtext": "For OADBY TILL MEMBER"
-    },
-    "xAxis": {
-        "categories": x_data
-    },
-    "yAxis": {
-        "title": {
-            "text": "Count of Samples"
-        }
-    },
-    "tooltip": {
-        "shared": True
-    },
-    "series": [
-        {
-            "name": "Count of Samples",
-            "data": y_data
-        }
-    ]
-}
+# Prepare data for line chart
+chart_data = count_data.set_index('PlasticityIndex')['Count']
 
 # Render the chart with Streamlit
 st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
-hg.Highcharts(options=chart_options)  # Note: Ensure this function exists and is correctly used
+st.line_chart(chart_data)
