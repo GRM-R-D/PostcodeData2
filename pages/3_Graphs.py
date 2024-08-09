@@ -8,7 +8,7 @@ data = pd.read_csv('Pointdate.csv')
 # Filter data to include only rows with the specified geology
 filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 
-# Count the occurrences of 'OADBY TILL MEMBER' for each Plasticity Index value
+# Count the occurrences of 'OADBY TILL MEMBER' and list Plasticity Index values
 count_data = filtered_data.groupby('PlasticityIndex').size().reset_index(name='Count')
 
 # Display the filtered data (optional)
