@@ -15,43 +15,42 @@ filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 count_data = filtered_data['PlasticityIndex'].value_counts().reset_index()
 count_data.columns = ['PlasticityIndex', 'Count']
 
-# Exclude Plasticity Index values with a count of 0 (though `value_counts` should not include zero counts)
-count_data = count_data[count_data['Count'] > 0]
+
 
 # Display the DataFrame
 st.write("Plasticity Index Count Data:")
 st.write(count_data)
 
 # Prepare data for echarts
-x_data = count_data['PlasticityIndex'].astype(str).tolist()  # Use strings for x-axis labels
-y_data = count_data['Count'].tolist()
+x_data = count_data['Count'].tolist()  # Move 'Count' to x-axis
+y_data = count_data['PlasticityIndex'].astype(str).tolist()  # Move 'PlasticityIndex' to y-axis
 
-# Echarts options for a line graph
+# Echarts options for a line graph with swapped axes
 chart_options = {
     "title": {
-        "text": "Plasticity Index vs. Count of Samples",
+        "text": "Count of Samples vs. Plasticity Index",
         "subtext": "For OADBY TILL MEMBER"
     },
     "tooltip": {
         "trigger": "axis"
     },
     "xAxis": {
-        "type": "category",
-        "data": x_data
+        "type": "value"  # Changed from 'category' to 'value'
     },
     "yAxis": {
-        "type": "value"
+        "type": "category",  # Changed from 'value' to 'category'
+        "data": y_data  # Use 'PlasticityIndex' as y-axis categories
     },
     "series": [
         {
             "name": "Count of Samples",
-            "type": "line",  # Changed from 'bar' to 'line'
-            "data": y_data
+            "type": "line",
+            "data": list(zip(x_data, y_data))  # Zip 'Count' and 'PlasticityIndex' for correct plotting
         }
     ]
 }
 
 # Render the chart with Streamlit
-st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
+st.subheader("Count of Samples vs. Plasticity Index for OADBY TILL MEMBER")
 
 st_echarts(options=chart_options)
