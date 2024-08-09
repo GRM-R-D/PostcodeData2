@@ -19,10 +19,14 @@ st.write("Filtered Data from CSV:")
 st.write(mean_data)
 
 # Prepare data for streamlit-lightweight-charts
-chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
-chart_data['time'] = chart_data['time'].astype(str)  # Convert datetime to string
+# Convert dates to Unix timestamps
+mean_data['Date'] = mean_data['Date'].astype(int) // 10**9  # Convert to Unix timestamp in seconds
 
-# Chart options
+# Convert to dict format suitable for Lightweight Charts
+chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
+chart_data = chart_data.to_dict(orient='records')
+
+# Chart options with custom date formatting
 chartOptions = {
     "layout": {
         "textColor": 'black',
@@ -30,13 +34,19 @@ chartOptions = {
             "type": 'solid',
             "color": 'white'
         }
+    },
+    "xAxis": {
+        "labels": {
+            "formatter": "function(value) { return new Date(value * 1000).toLocaleDateString('en-GB'); }"  # Format timestamp to D-M-YYYY
+        }
     }
 }
 
 # Series data
 seriesLineChart = [{
-    "type": 'Line',
-    "data": chart_data.to_dict(orient='records'),
+    "name": "Plasticity Index",
+    "data": chart_data,
+    "type": 'line',
     "options": {}
 }]
 
