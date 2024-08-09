@@ -18,8 +18,8 @@ st.write(count_data)
 # Convert data to format suitable for Lightweight Charts
 chart_data = count_data.rename(columns={'PlasticityIndex': 'x', 'Count': 'y'})
 
-# Chart options
-chartOptions = {
+# Prepare chart options and series data
+chart_options = {
     "layout": {
         "textColor": 'black',
         "background": {
@@ -28,31 +28,26 @@ chartOptions = {
         }
     },
     "xAxis": {
-        "title": "Plasticity Index",
-        "type": "linear"
+        "title": "Plasticity Index"
     },
     "yAxis": {
-        "title": "Count",
-        "type": "linear"
+        "title": "Count"
     }
 }
 
-# Series data
-seriesLineChart = [{
+series_line_chart = {
     "type": 'Line',
     "data": chart_data.to_dict(orient='records'),
     "options": {
         "color": 'blue',
         "lineWidth": 2
     }
-}]
+}
 
-# Render the chart with Streamlit
+# Render the chart
 st.subheader("Plasticity Index vs Count of OADBY TILL MEMBER")
 
-renderLightweightCharts([
-    {
-        "chart": chartOptions,
-        "series": seriesLineChart
-    }
-], 'line')
+renderLightweightCharts({
+    "chart": chart_options,
+    "series": [series_line_chart]
+})
