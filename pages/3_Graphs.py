@@ -14,41 +14,39 @@ filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 # Calculate the mean Plasticity Index for each Date
 mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
 
-# Prepare data for ApexCharts
-chart_data = [{'x': d, 'y': pi} for d, pi in mean_data[['Date', 'PlasticityIndex']].values]
+# Display the filtered data (optional)
+st.write("Filtered Data from CSV:")
+st.write(mean_data)
 
-# Create ApexCharts line chart configuration with curving
-chart_options = {
-    'chart': {
-        'type': 'line',
-        'zoom': {
-            'enabled': True
-        }
+# Prepare data for ApexCharts
+dates = mean_data['Date'].dt.strftime('%Y-%m-%d').tolist()  # Convert to string format for labels
+plasticity_indices = mean_data['PlasticityIndex'].tolist()
+
+# Create ApexCharts line chart specification
+options = {
+    "chart": {
+        "type": "line",
+        "zoom": {"enabled": True}
     },
-    'title': {
-        'text': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
-        'align': 'center'
+    "title": {
+        "text": "Mean Plasticity Index Over Time for OADBY TILL MEMBER",
+        "align": "center"
     },
-    'xaxis': {
-        'type': 'datetime',
-        'title': {
-            'text': 'Date'
-        }
+    "xaxis": {
+        "categories": dates,
+        "title": {"text": "Date"}
     },
-    'yaxis': {
-        'title': {
-            'text': 'Mean Plasticity Index'
-        }
+    "yaxis": {
+        "title": {"text": "Mean Plasticity Index"}
     },
-    'series': [{
-        'name': 'Plasticity Index',
-        'data': chart_data,
-        'color': '#FF5733',
-        'lineWidth': 2,
-        'fillOpacity': 0.3,
-        'smooth': True  # Smoothing the line
-    }]
+    "dataLabels": {"enabled": False},
+    "tooltip": {"enabled": True}
 }
 
 # Display the ApexCharts chart in Streamlit
-st_apexcharts(options=chart_options, height=400)
+st_apexcharts(
+    options=options,
+    series=[{"name": "Plasticity Index", "data": plasticity_indices}],
+    width='600px',
+    title='Mean Plasticity Index Over Time'
+)
