@@ -8,7 +8,7 @@ data = pd.read_csv('Pointdate.csv')
 # Filter data to include only rows with the specified geology
 filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 
-# Count the occurrences of 'OADBY TILL MEMBER' and list Plasticity Index values
+# Count the occurrences of 'OADBY TILL MEMBER' for each Plasticity Index value
 count_data = filtered_data.groupby('PlasticityIndex').size().reset_index(name='Count')
 
 # Display the filtered data (optional)
@@ -18,7 +18,7 @@ st.write(count_data)
 # Create ECharts line chart specification
 chart_options = {
     'title': {
-        'text': 'Count of OADBY TILL MEMBER vs Plasticity Index',
+        'text': 'Plasticity Index vs Count of OADBY TILL MEMBER',
         'left': 'center'
     },
     'tooltip': {
@@ -26,18 +26,18 @@ chart_options = {
     },
     'xAxis': {
         'type': 'value',
-        'name': 'Plasticity Index',
+        'name': 'Count',
         'nameLocation': 'middle',
         'nameGap': 30
     },
     'yAxis': {
         'type': 'value',
-        'name': 'Count',
+        'name': 'Plasticity Index',
         'nameLocation': 'middle',
         'nameGap': 50
     },
     'series': [{
-        'data': count_data[['PlasticityIndex', 'Count']].values.tolist(),
+        'data': count_data[['Count', 'PlasticityIndex']].values.tolist(),
         'type': 'line',
         'smooth': True,
         'areaStyle': {}
