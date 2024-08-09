@@ -1,17 +1,18 @@
 import plotly.express as px
 import streamlit as st
 
-from streamlit_plotly_events import plotly_events
+st.subheader("Define a custom colorscale")
+df = px.data.iris()
+fig = px.scatter(
+    df,
+    x="sepal_width",
+    y="sepal_length",
+    color="sepal_length",
+    color_continuous_scale="reds",
+)
 
-# Writes a component similar to st.write()
-fig = px.line(x=[1], y=[1])
-selected_points = plotly_events(fig)
-
-# Can write inside of things using with!
-with st.expander('Plot'):
-    fig = px.line(x=[1], y=[1])
-    selected_points = plotly_events(fig)
-
-# Select other Plotly events by specifying kwargs
-fig = px.line(x=[1], y=[1])
-selected_points = plotly_events(fig, click_event=False, hover_event=True)
+tab1, tab2 = st.tabs(["Streamlit theme (default)", "Plotly native theme"])
+with tab1:
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+with tab2:
+    st.plotly_chart(fig, theme=None, use_container_width=True)
