@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from streamlit_apexcharts import st_apexcharts
+from streamlit_apexjs import st_apexcharts
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
