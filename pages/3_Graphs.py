@@ -20,7 +20,7 @@ st.write(mean_data)
 
 # Prepare data for streamlit-lightweight-charts
 chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
-chart_data = chart_data.to_dict(orient='records')
+chart_data['time'] = chart_data['time'].astype(str)  # Convert datetime to string
 
 # Chart options
 chartOptions = {
