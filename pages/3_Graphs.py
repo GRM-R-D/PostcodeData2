@@ -11,19 +11,17 @@ data['Date'] = pd.to_datetime(data['Date'])
 # Filter data to include only rows with the specified geology
 filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 
-# Calculate the mean Plasticity Index for each Date
-mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
+# Count the number of samples for each Plasticity Index value
+count_data = filtered_data['PlasticityIndex'].value_counts().reset_index()
+count_data.columns = ['PlasticityIndex', 'Count']
 
 # Display the filtered data (optional)
-st.write("Filtered Data from CSV:")
-st.write(mean_data)
+st.write("Plasticity Index Count Data:")
+st.write(count_data)
 
 # Prepare data for streamlit-lightweight-charts
-# Convert dates to Unix timestamps
-mean_data['Date'] = mean_data['Date'].astype(int) // 10**9  # Convert to Unix timestamp in seconds
-
 # Convert to dict format suitable for Lightweight Charts
-chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
+chart_data = count_data[['PlasticityIndex', 'Count']].rename(columns={'PlasticityIndex': 'time', 'Count': 'value'})
 chart_data = chart_data.to_dict(orient='records')
 
 # Chart options with custom date formatting
@@ -37,25 +35,25 @@ chartOptions = {
     },
     "xAxis": {
         "labels": {
-            "formatter": "function(value) { return new Date(value * 1000).toLocaleDateString('en-GB'); }"  # Format timestamp to D-M-YYYY
+            "formatter": "function(value) { return value; }"  # Show Plasticity Index values directly
         }
     }
 }
 
 # Series data
 seriesLineChart = [{
-    "name": "Plasticity Index",
+    "name": "Count of Samples",
     "data": chart_data,
-    "type": 'line',
+    "type": 'bar',  # Using 'bar' for count of samples
     "options": {}
 }]
 
 # Render the chart with Streamlit
-st.subheader("Mean Plasticity Index Over Time for OADBY TILL MEMBER")
+st.subheader("Plasticity Index vs. Count of Samples for OADBY TILL MEMBER")
 
 renderLightweightCharts([
     {
         "chart": chartOptions,
         "series": seriesLineChart
     }
-], 'line')
+], 'bar')  # Using 'bar' to visualize counts
