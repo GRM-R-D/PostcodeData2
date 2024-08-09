@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from streamlit_lightweight_charts import renderLightweightCharts
+import streamlit_gchart as gchart
 
 # Load the CSV data
 data = pd.read_csv('Pointdate.csv')
@@ -14,38 +14,18 @@ filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
 # Calculate the mean Plasticity Index for each Date
 mean_data = filtered_data.groupby('Date', as_index=False)['PlasticityIndex'].mean()
 
-# Display the filtered data (optional)
-st.write("Filtered Data from CSV:")
-st.write(mean_data)
+# Prepare data for Google Charts
+chart_data = [['Date', 'Mean Plasticity Index']] + [[d.strftime('%Y-%m-%d'), pi] for d, pi in mean_data[['Date', 'PlasticityIndex']].values]
 
-# Prepare data for streamlit-lightweight-charts
-chart_data = mean_data[['Date', 'PlasticityIndex']].rename(columns={'Date': 'time', 'PlasticityIndex': 'value'})
-chart_data['time'] = chart_data['time'].astype(str)  # Convert datetime to string
-
-# Chart options
-chartOptions = {
-    "layout": {
-        "textColor": 'black',
-        "background": {
-            "type": 'solid',
-            "color": 'white'
-        }
-    }
+# Define the GChart options
+chart_options = {
+    'title': 'Mean Plasticity Index Over Time for OADBY TILL MEMBER',
+    'curveType': 'function',  # This adds the smoothing effect
+    'legend': {'position': 'bottom'},
+    'hAxis': {'title': 'Date'},
+    'vAxis': {'title': 'Mean Plasticity Index'},
+    'height': 400,
 }
 
-# Series data
-seriesLineChart = [{
-    "type": 'Line',
-    "data": chart_data.to_dict(orient='records'),
-    "options": {}
-}]
-
-# Render the chart with Streamlit
-st.subheader("Mean Plasticity Index Over Time for OADBY TILL MEMBER")
-
-renderLightweightCharts([
-    {
-        "chart": chartOptions,
-        "series": seriesLineChart
-    }
-], 'line')
+# Display the chart using streamlit-gchart
+gchart.line_chart(data=chart_data, options=chart_options)
