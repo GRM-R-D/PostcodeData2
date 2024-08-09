@@ -28,4 +28,4 @@ chart_options = {
 }
 
 # Display the chart using streamlit-gchart
-gchart.line_chart(data=chart_data, options=chart_options)
+gchart.gchart(data=chart_data, options=chart_options)
