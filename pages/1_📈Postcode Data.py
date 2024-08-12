@@ -42,8 +42,6 @@ st.sidebar.markdown("""
      
      You can filter projects by Plasticity Index, Project ID, and Geology Code.
      
-     ppooo
-     
      The map shows project locations with color-coded markers based on Plasticity Index values, helping you compare 
      laboratory data with geology and location information, as well as explore relationships with nearby projects.
 
