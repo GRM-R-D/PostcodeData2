@@ -9,7 +9,7 @@ data = pd.read_csv('Pointdate.csv')
 data['Date'] = pd.to_datetime(data['Date'])
 
 # Filter data to include only rows with the specified geology
-filtered_data = data[data['GeologyCode'] == 'OADBY TILL MEMBER']
+filtered_data = data[data['GeologyCode'] == 'MERCIA MUDSTONE']
 
 # Count the number of samples for each Plasticity Index value
 count_data = filtered_data['PlasticityIndex'].value_counts().reset_index()
