@@ -33,6 +33,8 @@ st.sidebar.markdown("""
      You can use this tool to compare any data fields and produce any desired output, such as bar charts, scatter plots 
      and custom tables, in order to personalise your analysis and discover trends in the data.
      
+     lalalalala 
+     
      There are options to export to CSV or image formats.
 """)
 
