@@ -6,6 +6,23 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 # Set up the Streamlit page
 st.set_page_config(page_title="Graphs", page_icon="📈", layout="wide")
 
+@st.cache_resource
+def add_logo(logo_url: str, width: int = 250, height: int = 300):
+    """Add a logo (from logo_url) on the top of the navigation page of a multipage app."""
+    logo_css = f"""
+        <style>
+            [data-testid="stSidebarNav"] {{
+                background-image: url({logo_url});
+                background-repeat: no-repeat;
+                background-size: {width}px {height}px; /* Set the size of the logo */
+                padding-top: {height + 20}px;
+                background-position: 20px 0px;
+            }}
+        </style>
+    """
+    st.markdown(logo_css, unsafe_allow_html=True)
+
+
 # Add a markdown header
 st.markdown("## Trends Graphs")
 
