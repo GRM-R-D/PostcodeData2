@@ -6,7 +6,7 @@ from streamlit_folium import folium_static
 import streamlit.components.v1 as components
 
 # Set up the page configuration
-st.set_page_config(page_title="Postcode Data", page_icon="📈", layout="wide")
+st.set_page_config(page_title="Postcode Data", page_icon="🗄️", layout="wide")
 
 
 @st.cache_resource
@@ -33,7 +33,7 @@ logo_url = "https://grmdevelopment.wpengine.com/wp-content/uploads/2020/07/GRM-m
 add_logo(logo_url, height=100)
 
 # Set the title and sidebar header
-st.markdown("# Postcode Data")
+st.markdown("## Postcode Data")
 
 # Add a paragraph to the sidebar
 st.sidebar.markdown("""

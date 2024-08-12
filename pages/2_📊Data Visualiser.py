@@ -5,9 +5,11 @@ import streamlit as st
 # Adjust the width of the Streamlit page
 st.set_page_config(
     page_title="Custom Data Visualisation by attributes",
-    layout="wide"
+    layout="wide",
+    page_icon=":bar_chart:"
 )
 
+st.markdown("## Custom Data Visualisation by attributes")
 
 @st.cache_resource
 def add_logo(logo_url: str, width: int = 250, height: int = 300):
