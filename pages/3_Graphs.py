@@ -42,5 +42,5 @@ fig.update_layout(
 )
 
 # Render the chart with Streamlit
-st.subheader("Plasticity Index vs. Count of Samples for MERCIA MUDSTONE")
+st.subheader("Plasticity Index vs. Count of Samples for MERCIA MUDSTONE GROUP")
 st.plotly_chart(fig, use_container_width=True)
