@@ -9,7 +9,7 @@ data = pd.read_csv('Pointdate.csv')
 data['Date'] = pd.to_datetime(data['Date'])
 
 # Filter data to include only rows with the specified geology
-filtered_data = data[data['GeologyCode'] == 'GLACIAL DEPOSITS']
+filtered_data = data[data['GeologyCode'] == 'MERCIA MUDSTONE GROUP']
 
 # Count the number of samples for each Plasticity Index value
 count_data = filtered_data['PlasticityIndex'].value_counts().reset_index()
@@ -42,5 +42,5 @@ fig.update_layout(
 )
 
 # Render the chart with Streamlit
-st.subheader("Plasticity Index vs. Count of Samples for GLACIAL DEPOSITS")
+st.subheader("Plasticity Index vs. Count of Samples for MERCIA MUDSTONE GROUP")
 st.plotly_chart(fig, use_container_width=True)
