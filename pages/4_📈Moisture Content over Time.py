@@ -93,7 +93,7 @@ with row2[0]:
     date_filtered_data['Year'] = date_filtered_data['Date'].dt.year
 
     if selected_graph == 'Scatter Plot':
-        st.write("Moisture Content and Depth Date Data:")
+        st.write("Moisture Content and Depth with Date Data:")
         filtered_df = date_filtered_data[['Date', 'MoistureContent', 'DepthValue']].copy()
         filtered_df['Date'] = filtered_df['Date'].dt.strftime('%d/%m/%Y')
         st.dataframe(filtered_df, use_container_width=True, hide_index=True)
