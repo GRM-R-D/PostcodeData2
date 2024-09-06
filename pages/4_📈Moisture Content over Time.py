@@ -77,7 +77,6 @@ filtered_data = data[data['GeologyCode'] == selected_geology]
 
 # Row 2 - Date Range, Map, and DataFrame
 with row2[0]:
-    st.markdown("##### Select Date Range")
     min_date = min(filtered_data['Date']).date()
     max_date = max(filtered_data['Date']).date()
     start_date, end_date = st.slider(
