@@ -39,6 +39,6 @@ st.markdown(
     **👈 Select a demo from the sidebar** to see some examples
     of what we can do with our data!
 
-    ### Any suggestions for new visualisations?
+    This application features spatial analysis, tabular analysis and graphs.
 """
 )

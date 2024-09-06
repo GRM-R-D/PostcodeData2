@@ -54,6 +54,7 @@ df = pd.read_csv(filename)
 # Determine the range for Plasticity Index slider
 plasticity_rng = (df['PlasticityIndex'].min(), df['PlasticityIndex'].max())
 
+geojson_file = 'postcodes.geojson'
 
 def get_color(plasticity_index):
     if plasticity_index >= 40:
@@ -65,25 +66,57 @@ def get_color(plasticity_index):
     else:
         return 'green'
 
-def create_map(filter_df):
+
+def create_map(filter_df, geojson_file):
     # Check if the filtered DataFrame is empty
     if filter_df.empty:
         return folium.Map(location=[0, 0], zoom_start=6)  # Default location if no data
 
     m = folium.Map(location=[filter_df['Latitude'].mean(), filter_df['Longitude'].mean()], zoom_start=6)
+
+    # Add the GeoJSON layer for postcodes with styled hover tooltips
+    folium.GeoJson(
+        geojson_file,
+        name="Postcode Boundaries",
+        style_function=lambda feature: {
+            'fillColor': '#blue',
+            'color': 'black',
+            'weight': 2,
+            'fillOpacity': 0.1,
+        },
+        tooltip=folium.GeoJsonTooltip(
+            fields=['name'],
+            aliases=['Postcode:'],
+            localize=True,
+            sticky=True,
+            direction='top',
+            style=(
+                "background-color: white; "
+                "color: black; "
+                "font-size: 16px; "  # Ensure this is set correctly
+                "font-weight: bold; "
+                "padding: 5px;"
+                "border-radius: 3px; "
+                "border: 1px solid black;"
+            )
+        )
+    ).add_to(m)
+
     marker_cluster = MarkerCluster().add_to(m)
 
     # Iterate over the filtered DataFrame rows and add markers to the cluster
     for _, row in filter_df.iterrows():
         location = [row['Latitude'], row['Longitude']]
         popup_content = (
-            f"Postcode: {row['Postcode']}<br>"
-            f"Project ID: {row['ProjectID']}<br>"
-            f"Geology: {row['GeologyCode']}<br>"
-            f"Plastic Limit: {row['PlasticLimit']}<br>"
-            f"Liquid Limit: {row['LiquidLimit']}<br>"
-            f"Plasticity Index: {row['PlasticityIndex']}<br>"
-            f"Moisture Content: {row['MoistureContent']}"
+            f"<div style='font-size: 14px;'>"
+            f"<b>Postcode:</b> {row['Postcode']}<br>"
+            f"<b>Project ID:</b> {row['ProjectID']}<br>"
+            f"<b>Geology:</b> {row['GeologyCode']}<br>"
+            f"<b>Plastic Limit:</b> {row['PlasticLimit']}<br>"
+            f"<b>Liquid Limit:</b> {row['LiquidLimit']}<br>"
+            f"<b>Plasticity Index:</b> {row['PlasticityIndex']}<br>"
+            f"<b>Moisture Content:</b> {row['MoistureContent']}"
+            f"</div>"
         )
         popup = folium.Popup(popup_content, max_width=300)
         folium.Marker(location=location, popup=popup, icon=folium.Icon(color=get_color(row['PlasticityIndex']))).add_to(
@@ -95,14 +128,15 @@ def create_map(filter_df):
 
 
 def show_map(filtered_df):
-    m = create_map(filtered_df)  # Create the map with the filtered data
+    m = create_map(filtered_df, geojson_file)  # Pass the GeoJSON file
     folium_static(m)  # Display the map
+
 
 
 # Define the layout using Streamlit's grid system
 row1 = st.columns([2, 1, 1])
 row2 = st.columns([1, 1])
-row3 = st.columns([2, 2])
+row3 = st.columns([1, 1])
 
 # Initialize session state variables if not already present
 if 'selected_project_id' not in st.session_state:
@@ -112,13 +146,13 @@ if 'selected_geology_code' not in st.session_state:
 
 # Row 1: Filters and Searches
 with row1[0]:
-    with st.expander("Plasticity Index Filter", expanded=True):
+    with st.expander("Plasticity Index Filter", expanded=False):
         plasticity_min, plasticity_max = plasticity_rng
         plasticity_filter = st.slider("Plasticity Index", min_value=int(plasticity_min), max_value=int(plasticity_max),
                                       value=(int(plasticity_min), int(plasticity_max)))
 
 with row1[1]:
-    with st.expander("Project ID Search", expanded=True):
+    with st.expander("Project ID Search", expanded=False):
         project_ids = sorted(df['ProjectID'].astype(str).unique())
         selected_project_id = st.selectbox("Select Project ID", options=[""] + project_ids, key="project_id")
 
@@ -128,7 +162,7 @@ with row1[1]:
             st.session_state.selected_geology_code = ""  # Reset Geology Code when Project ID changes
 
 with row1[2]:
-    with st.expander("Geology Code Search", expanded=True):
+    with st.expander("Geology Code Search", expanded=False):
         # Update Geology Code options based on selected Project ID
         if st.session_state.selected_project_id:
             geology_codes = sorted(
