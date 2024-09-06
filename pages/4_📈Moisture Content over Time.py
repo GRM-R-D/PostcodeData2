@@ -112,7 +112,7 @@ with row2[0]:
         )
 
 with row2[1]:
-    st.markdown("## Map")
+    st.markdown("##### Map")
 
     # Compute the average Moisture Content per Date and Location
     avg_data = date_filtered_data.groupby(['Date', 'GeologyCode', 'Latitude', 'Longitude'], as_index=False)['MoistureContent'].mean()
